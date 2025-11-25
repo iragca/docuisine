@@ -1,0 +1,49 @@
+services:
+  docuisine:
+    build:
+      dockerfile: Dockerfile
+    container_name: docuisine_app
+    restart: always
+    ports:
+      - "7000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgres://${POSTGRES_USER:?err}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+    volumes:
+      - ../../:/app
+
+  db:
+    hostname: ${POSTGRES_HOST:?err}
+    image: postgres:18-trixie
+    container_name: docuisine_postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?err}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?err}
+      POSTGRES_DB: ${POSTGRES_DB:?err}
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/postgresql/MAJOR/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready",
+          "-U",
+          "${POSTGRES_USER}",
+          "-d",
+          "${POSTGRES_DB}",
+          "-h",
+          "localhost",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  db_data:
