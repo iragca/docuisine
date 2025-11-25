@@ -16,7 +16,7 @@ services:
 
   db:
     hostname: ${POSTGRES_HOST:?err}
-    image: postgres:18-trixie
+    image: postgres:18.1
     container_name: docuisine_postgres
     restart: always
     ports:
@@ -38,7 +38,7 @@ services:
           "-d",
           "${POSTGRES_DB}",
           "-h",
-          "localhost",
+          "${POSTGRES_HOST}",
         ]
       interval: 5s
       timeout: 3s
