@@ -4,7 +4,7 @@ services:
       dockerfile: ./scripts/dev/Dockerfile
       context: ../..
     container_name: docuisine_app
-    restart: always
+    restart: no
     ports:
       - "7000:8000"
     depends_on:
