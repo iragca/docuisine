@@ -1,4 +1,4 @@
-from .meta import HealthCheck, Status
+from .health import HealthCheck, Status
 from .response import Error, ErrorCode, Response
 
 __all__ = [
