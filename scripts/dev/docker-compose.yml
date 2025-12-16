@@ -1,21 +1,4 @@
 services:
-  docuisine:
-    build:
-      dockerfile: ./scripts/dev/Dockerfile
-      context: ../..
-    user: "${UID}:${GID}"
-    container_name: docuisine_app
-    restart: no
-    ports:
-      - "7000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      XDG_CACHE_HOME: /app/.cache
-      DATABASE_URL: "postgres://${POSTGRES_USER:?err}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
-    volumes:
-      - ../../:/app
 
   db:
     hostname: ${POSTGRES_HOST:?err}

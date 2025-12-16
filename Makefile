@@ -23,6 +23,7 @@ requirements:
 dev:
 	docker compose -f scripts/dev/docker-compose.yml down
 	docker compose -f scripts/dev/docker-compose.yml up --build -d
+	uv run fastapi dev docuisine/main.py --host 0.0.0.0 --port 7000
 
 # Stop development server
 .PHONY: dev-down
@@ -47,14 +48,14 @@ test:
 ## Lint using ruff (use `make format` to do formatting)
 .PHONY: lint
 lint:
-	ruff format --check
-	ruff check
+	uv run ruff format --check
+	uv run ruff check
 
 ## Format source code with ruff
 .PHONY: format
 format:
-	ruff check --fix
-	ruff format
+	uv run ruff check --fix
+	uv run ruff format
 
 ## Delete all compiled Python files
 .PHONY: clean
