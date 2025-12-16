@@ -7,7 +7,7 @@ name = "docuisine"
 version = "0.0.2"
 description = "Backend for the Docuisine application."
 authors = [
-  { name = "Chris Irag", email = "irag.chrisandrei@mailbox.org"},
+  { name = "Chris Irag", email = "iragca@pm.me"},
 ]
 
 readme = "README.md"
