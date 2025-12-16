@@ -141,6 +141,7 @@ name = "docuisine"
 version = "0.0.2"
 source = { editable = "." }
 dependencies = [
+    { name = "email-validator" },
     { name = "fastapi", extra = ["standard"] },
     { name = "mkdocs" },
     { name = "mkdocs-material" },
@@ -155,6 +156,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "email-validator", specifier = ">=2.3.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.121.1" },
     { name = "mkdocs" },
     { name = "mkdocs-material", specifier = ">=9.6.23" },
