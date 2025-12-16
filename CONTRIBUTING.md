@@ -7,6 +7,18 @@
 make requirements   #  Install dependencies
 ```
 
+Start the development server and start building!.
+
+```bash
+make dev
+```
+
+If finished, shutdown the development server.
+
+```bash
+make dev-down
+```
+
 # Development
 
 ```bash
