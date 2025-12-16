@@ -36,11 +36,6 @@ make tests              #  Run unit tests
 ├── docuisine           # Source code for use in this project
 ├── scripts/dev         # Docker-compose files for development database
 ├── tests               # Unit tests
-├── CONTRIBUTING.md     # Project contribution guidelines and instructions
-├── LICENSE             # Open-source license if one is chosen
 ├── Makefile            # Makefile with convenience commands like `make test` or `make format`
-├── pyproject.toml      # Dependencies list and project configuration
-└── README.md           # The top-level README for developers using this project
+└── pyproject.toml      # Dependencies list and project configuration
 ```
-
----
