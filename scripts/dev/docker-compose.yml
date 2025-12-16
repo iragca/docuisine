@@ -12,6 +12,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      XDG_CACHE_HOME: /app/.cache
       DATABASE_URL: "postgres://${POSTGRES_USER:?err}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
     volumes:
       - ../../:/app
