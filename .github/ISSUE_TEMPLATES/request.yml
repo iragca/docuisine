@@ -1,0 +1,52 @@
+name: "🚀 Request"
+title: "[REQUEST]: "
+labels: ["request"]
+description: "Request a feature or change."
+body:
+  - type: input
+    id: role
+    attributes:
+      label: As a [role]
+      description: Who needs this?
+      placeholder: "ex. Mobile Phone User"
+    validations:
+      required: true
+
+  - type: input
+    id: need
+    attributes:
+      label: I need [function]
+      description: What does the [role] need?
+      placeholder: "ex. a 'scroll back to top' button"
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefit
+    attributes:
+      label: So that [benefit]
+      description: How does the [function] benefit the [role]?
+      placeholder: "ex. I save time navigating the user interface"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: details
+    attributes:
+      label: "Details and Assumptions"
+      description: "Document what you know here."
+      placeholder: "e.g., Provide any context or assumptions relevant to the user story."
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: "How do we know this feature is complete when implemented?"
+      placeholder: |
+        Given [some context]
+        When [certain action is taken]
+        Then [an event occurs and is observed to be correct]
+    validations:
+      required: false

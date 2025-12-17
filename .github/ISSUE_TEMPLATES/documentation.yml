@@ -1,0 +1,43 @@
+name: "📖 Documentation"
+description: Report missing, unclear, or incorrect documentation.
+title: "[DOCS]: "
+labels: ["documentation"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      label: "📌 Issue Summary"
+      value: "Describe the issue with the documentation clearly."
+
+  - type: input
+    id: location
+    attributes:
+      label: "🔍 Location"
+      description: "Provide the file path, URL, or section where the issue occurs."
+      placeholder: "e.g., docs/setup-guide.md, Section: Installation"
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "📝 Description of the Problem"
+      description: "Explain what is incorrect, missing, or unclear."
+      placeholder: "The installation instructions are outdated..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested_solution
+    attributes:
+      label: "💡 Suggested Solution"
+      description: "Provide a suggestion for how this could be improved."
+      placeholder: "Update the installation command to match the latest version."
+
+  - type: checkboxes
+    id: acceptance_criteria
+    attributes:
+      label: "✅ Acceptance Criteria"
+      description: "Check all that apply for a successful fix."
+      options:
+        - label: "The information is clear and concise"
+        - label: "The formatting follows the project's style guide"
+        - label: "No broken links or typos"
