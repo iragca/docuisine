@@ -6,7 +6,7 @@ services:
     container_name: docuisine_postgres
     restart: no
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:?err}:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:?err}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?err}
