@@ -3,10 +3,13 @@ description: Report missing, unclear, or incorrect documentation.
 title: "[DOCS]: "
 labels: ["documentation"]
 body:
-  - type: markdown
+  - type: textarea
+    id: issue_summary
     attributes:
       label: "📌 Issue Summary"
-      value: "Describe the issue with the documentation clearly."
+      description: "Describe the issue with the documentation clearly."
+    validations:
+      required: true
 
   - type: input
     id: location
@@ -14,13 +17,6 @@ body:
       label: "🔍 Location"
       description: "Provide the file path, URL, or section where the issue occurs."
       placeholder: "e.g., docs/setup-guide.md, Section: Installation"
-
-  - type: textarea
-    id: description
-    attributes:
-      label: "📝 Description of the Problem"
-      description: "Explain what is incorrect, missing, or unclear."
-      placeholder: "The installation instructions are outdated..."
     validations:
       required: true
 
@@ -30,6 +26,8 @@ body:
       label: "💡 Suggested Solution"
       description: "Provide a suggestion for how this could be improved."
       placeholder: "Update the installation command to match the latest version."
+    validations:
+      required: false
 
   - type: checkboxes
     id: acceptance_criteria
