@@ -6,30 +6,30 @@ body:
   - type: input
     id: role
     attributes:
-      label: As a [role]
+      label: Intended user
       description: Who needs this?
       placeholder: "ex. Mobile Phone User"
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     id: need
     attributes:
-      label: I need [function]
-      description: What does the [role] need?
+      label: Requested function or change
+      description: What is the needed function or change?
       placeholder: "ex. a 'scroll back to top' button"
     validations:
       required: true
 
   - type: textarea
-    id: benefit
+    id: usecases
     attributes:
-      label: So that [benefit]
-      description: How does the [function] benefit the [role]?
+      label: Usescases / Benefits
+      description: How does this help the user?
       placeholder: "ex. I save time navigating the user interface"
     validations:
       required: true
-  
+
   - type: textarea
     id: details
     attributes:
@@ -39,14 +39,10 @@ body:
     validations:
       required: false
 
-  - type: textarea
-    id: acceptance-criteria
+  - type: checkboxes
+    id: terms
     attributes:
-      label: Acceptance Criteria
-      description: "How do we know this feature is complete when implemented?"
-      placeholder: |
-        Given [some context]
-        When [certain action is taken]
-        Then [an event occurs and is observed to be correct]
-    validations:
-      required: false
+      label: Confirmation for duplicate requests
+      options:
+        - label: I confirm that I have checked there are no existing requests for duplicates.
+          required: true
