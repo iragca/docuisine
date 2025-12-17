@@ -67,3 +67,27 @@ def at_least_one_digit(password: str) -> bool:
     if any(char.isdigit() for char in password):
         return True
     raise ValueError("Password must contain at least one digit.")
+
+
+def validate_version(version: str) -> str:
+    """
+    Validate that the version string follows semantic versioning (e.g., '1.0.0').
+
+    Parameters
+    ----------
+    version : str
+        The version string to validate.
+
+    Returns
+    -------
+    str
+        The validated version string.
+
+    Raises
+    ------
+    ValueError
+        If the version string does not follow semantic versioning.
+    """
+    has_two_dots(version)
+    has_only_digits(version)
+    return version

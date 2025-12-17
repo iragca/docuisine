@@ -4,6 +4,7 @@ from docuisine.utils.validation import (
     at_least_one_digit,
     has_only_digits,
     has_two_dots,
+    validate_version,
 )
 
 
@@ -47,3 +48,17 @@ def test_at_least_one_digit_invalid():
         at_least_one_digit("password")
     with raises(ValueError, match="Password must contain at least one digit"):
         at_least_one_digit("nopasswordhere")
+
+
+def test_validate_version_valid():
+    ## No validation errors should be raised
+    assert validate_version("1.0.0") == "1.0.0"
+    assert validate_version("10.20.30") == "10.20.30"
+
+
+def test_validate_version_invalid():
+    ## Validation errors should be raised
+    with raises(ValueError, match="Version must have two dots"):
+        validate_version("1.0")
+    with raises(ValueError, match="Version parts must be numeric"):
+        validate_version("1.a.0")
