@@ -15,9 +15,8 @@ body:
   - type: textarea
     id: need
     attributes:
-      label: Requested function or change
-      description: What is the needed function or change?
-      placeholder: "ex. a 'scroll back to top' button"
+      label: Description
+      description: Details of the request for the feature or change.
     validations:
       required: true
 
