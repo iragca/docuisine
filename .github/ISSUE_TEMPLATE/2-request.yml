@@ -13,19 +13,19 @@ body:
       required: true
 
   - type: textarea
-    id: need
-    attributes:
-      label: Description
-      description: Details of the request for the feature or change.
-    validations:
-      required: true
-
-  - type: textarea
     id: usecases
     attributes:
       label: Usescases / Benefits
       description: How does this help the user?
       placeholder: "ex. I save time navigating the user interface"
+    validations:
+      required: true
+
+  - type: textarea
+    id: need
+    attributes:
+      label: Description
+      description: Details of the request for the feature or change.
     validations:
       required: true
 
