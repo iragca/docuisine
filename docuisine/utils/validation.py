@@ -1,3 +1,6 @@
+import re
+
+
 def has_two_dots(version: str) -> bool:
     """
     Validate that the version string has exactly two dots.
@@ -91,3 +94,74 @@ def validate_version(version: str) -> str:
     has_two_dots(version)
     has_only_digits(version)
     return version
+
+
+def validate_pattern(password: str, pattern: str, error_message: str) -> bool:
+    """
+    Validate that the password matches a given regex pattern.
+
+    Parameters
+    ----------
+    password : str
+        The password string to validate.
+    pattern : str
+        The regex pattern the password must match.
+    error_message : str
+        The error message to raise if validation fails.
+
+    Returns
+    -------
+    bool
+        True if the password is valid.
+
+    Raises
+    ------
+    ValueError
+        If the password does not match the given pattern.
+    """
+    compiled_pattern = re.compile(pattern)
+    if compiled_pattern.search(password):
+        return True
+    raise ValueError(error_message)
+
+
+def validate_password(password: str) -> str:
+    """
+    Validate that the password meets complexity requirements.
+
+    Parameters
+    ----------
+    password : str
+        The password string to validate.
+
+    Returns
+    -------
+    str
+        The validated password string.
+
+    Raises
+    ------
+    ValueError
+        If the password does not meet complexity requirements.
+    """
+    validate_pattern(
+        password,
+        r"[0-9]",
+        "Password must contain at least one digit.",
+    )
+    validate_pattern(
+        password,
+        r"[A-Z]",
+        "Password must contain at least one uppercase letter.",
+    )
+    validate_pattern(
+        password,
+        r"[a-z]",
+        "Password must contain at least one lowercase letter.",
+    )
+    validate_pattern(
+        password,
+        r"[^A-Za-z0-9]",
+        "Password must contain at least one special character.",
+    )
+    return password

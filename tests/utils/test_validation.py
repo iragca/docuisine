@@ -4,6 +4,8 @@ from docuisine.utils.validation import (
     at_least_one_digit,
     has_only_digits,
     has_two_dots,
+    validate_password,
+    validate_pattern,
     validate_version,
 )
 
@@ -62,3 +64,31 @@ def test_validate_version_invalid():
         validate_version("1.0")
     with raises(ValueError, match="Version parts must be numeric"):
         validate_version("1.a.0")
+
+
+def test_validate_password_valid():
+    ## No validation errors should be raised
+    assert validate_password("Password1!")
+    assert validate_password("A1b2c3d4$")
+
+
+def test_validate_password_invalid():
+    ## Validation errors should be raised
+    with raises(ValueError, match="Password must contain at least one digit"):
+        validate_password("Password")
+    with raises(ValueError, match="Password must contain at least one uppercase letter"):
+        validate_password("password1")
+
+
+def test_validate_pattern_valid():
+    ## No validation errors should be raised
+    assert validate_pattern("abc123", r"[a-z0-9]", error_message="Invalid pattern")
+    assert validate_pattern("TEST_456", r"[A-Z0-9_]", error_message="Invalid pattern")
+
+
+def test_validate_pattern_invalid():
+    ## Validation errors should be raised
+    with raises(ValueError, match="Invalid pattern"):
+        validate_pattern("abc-123", r"^[a-z0-9]+$", error_message="Invalid pattern")
+    with raises(ValueError, match="Invalid pattern"):
+        validate_pattern("test@456", r"^[A-Z0-9_]+$", error_message="Invalid pattern")
