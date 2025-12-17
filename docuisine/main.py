@@ -2,6 +2,8 @@ from typing import Union
 
 from fastapi import FastAPI
 
+from docuisine.routes import user
+
 from .core.config import env
 from .schemas import HealthCheck, Status
 
@@ -25,3 +27,6 @@ def health_check():
         commit_hash=env.COMMIT_HASH,
         version=env.VERSION,
     )
+
+
+app.include_router(user.router)
