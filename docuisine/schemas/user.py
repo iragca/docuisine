@@ -10,7 +10,6 @@ class UserCreate(BaseModel):
         ..., description="The user's email address", examples=["user@example.com"]
     )
     password: Password = Field(
-        min_length=16,
         description="The user's password",
         examples=["strongPassword123!", "01fKl%#RJa4~Ob)'BER]"],
     )
