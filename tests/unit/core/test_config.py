@@ -1,4 +1,19 @@
+import pytest
+
 from docuisine.core.config import env
+
+
+@pytest.fixture(autouse=True)
+def setup_env_monkeypatch(monkeypatch):
+    monkeypatch.setattr(
+        "subprocess.check_output",
+        lambda cmd, stderr: {
+            ("git", "rev-parse", "--short", "HEAD"): b"abc1234\n",
+            ("uv", "version", "--short"): b"1.2.3\n",
+        }[tuple(cmd)],
+    )
+    monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@localhost/dbname")
+    monkeypatch.setenv("MODE", "testing")
 
 
 def test_database_url():
