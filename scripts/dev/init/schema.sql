@@ -36,7 +36,4 @@ CREATE TABLE store (
 );
 
 
--- Check this out
 CREATE INDEX idx_user_email ON users(email);
-CREATE INDEX idx_recipe_user ON recipes(user_id);
-CREATE INDEX idx_ingredient_recipe ON ingredients(recipe_id);
