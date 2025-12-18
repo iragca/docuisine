@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import DateTime, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column
 
 from docuisine.schemas import Role
 
@@ -21,12 +22,11 @@ class User(Base):
 
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
-    role = Column(String, nullable=False, default=Role.USER.value)
-    created_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    password: Mapped[str]
+    role: Mapped[str] = mapped_column(String, nullable=False, default=Role.USER.value)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default=datetime.now(timezone.utc)
+    )
 
-    def as_dict(self) -> dict:
-        """Convert the User instance to a dictionary representation."""
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

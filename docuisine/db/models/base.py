@@ -1,3 +1,7 @@
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import DeclarativeBase
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    def as_dict(self) -> dict:
+        """Convert the User instance to a dictionary representation."""
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
