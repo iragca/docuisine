@@ -45,6 +45,7 @@ force-sort-within-sections = true
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
     "ruff>=0.14.9",
     "ty>=0.0.2",
 ]

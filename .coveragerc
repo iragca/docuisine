@@ -1,0 +1,11 @@
+[run]
+omit =
+    */tests/*
+    */schemas/*
+    */db/*
+    */errors/*
+    */dependencies/*
+    */core/*
+
+    __init__.py
+
