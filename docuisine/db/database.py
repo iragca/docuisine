@@ -2,7 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from docuisine.core.config import env
-from docuisine.db.models.base import Base
 from docuisine.schemas.enums import Mode
 
 
@@ -24,5 +23,4 @@ def IS_PRODUCTION() -> bool:
 
 
 _engine = create_engine(env.DATABASE_URL, echo=not IS_PRODUCTION())
-Base.metadata.create_all(bind=_engine)
 SessionLocal = sessionmaker(bind=_engine)
