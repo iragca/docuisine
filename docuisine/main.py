@@ -1,14 +1,10 @@
 from fastapi import FastAPI
 
-from docuisine.routes import health, user
+from docuisine.routes import health, root, user
 
 app = FastAPI()
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
+app.include_router(root.router)
 app.include_router(user.router)
 app.include_router(health.router)
