@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 
 from docuisine.db.models import User
 from docuisine.schemas.annotations import DB_session
-from docuisine.schemas.user import UserCreate, UserOut, UserRead
+from docuisine.schemas.user import UserCreate, UserOut
 from docuisine.services import UserService
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -18,7 +18,7 @@ def get_users(db: DB_session) -> list[UserOut]:
 @router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=UserOut)
 def get_user(user_id: int, db: DB_session) -> UserOut:
     user_service = UserService(db_session=db)
-    user: User = user_service.get_user(UserRead(id=user_id))
+    user: User = user_service.get_user(user_id=user_id)
 
     if user is None:
         raise HTTPException(
