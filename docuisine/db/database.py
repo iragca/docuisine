@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from docuisine.core.config import Environment
+from docuisine.core.config import env
 from docuisine.db.models.base import Base
 from docuisine.schemas.enums import Mode
 
@@ -15,14 +15,14 @@ def IS_PRODUCTION() -> bool:
         ValueError
             If the MODE environment variable is not set to a valid value.
     """
-    mode = Environment.MODE
+    mode = env.MODE
     if mode not in (Mode.DEVELOPMENT, Mode.PRODUCTION, Mode.TESTING):
         raise ValueError(
             f"Invalid MODE: {mode}. Must be one of: development, production, testing."
         )
-    return Environment.MODE == Mode.PRODUCTION
+    return env.MODE == Mode.PRODUCTION
 
 
-_engine = create_engine(Environment.DATABASE_URL, echo=not IS_PRODUCTION())
+_engine = create_engine(env.DATABASE_URL, echo=not IS_PRODUCTION())
 Base.metadata.create_all(bind=_engine)
 SessionLocal = sessionmaker(bind=_engine)

@@ -1,9 +1,9 @@
+from functools import cached_property
 import os
 import subprocess
 from typing import Union
 
 from dotenv import load_dotenv
-from sqlalchemy.util import classproperty
 
 
 class Environment:
@@ -12,14 +12,14 @@ class Environment:
     def __init__(self) -> None:
         load_dotenv()
 
-    @classproperty
+    @cached_property
     def DATABASE_URL(self) -> str:
         URL = os.getenv("DATABASE_URL")
         if URL is None:
             raise EnvironmentError("DATABASE_URL environment variable is not set.")
         return URL
 
-    @classproperty
+    @cached_property
     def COMMIT_HASH(self) -> Union[str, None]:
         return (
             subprocess.check_output(
@@ -29,7 +29,7 @@ class Environment:
             .strip()
         )
 
-    @classproperty
+    @cached_property
     def VERSION(self) -> Union[str, None]:
         return (
             subprocess.check_output(["uv", "version", "--short"], stderr=subprocess.DEVNULL)
@@ -37,7 +37,7 @@ class Environment:
             .strip()
         )
 
-    @classproperty
+    @cached_property
     def MODE(self) -> str:
         mode = os.getenv("MODE")
         if mode is None:
