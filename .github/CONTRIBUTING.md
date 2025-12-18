@@ -4,7 +4,7 @@
 - Docker with docker compose. [Install instructions](https://docs.docker.com/compose/install/).
 
 ```bash
-make requirements   #  Install dependencies
+make requirements       #  Install dependencies
 ```
 
 Start the development server and start building!.
@@ -26,7 +26,17 @@ make prod               #  Run a local production server
 make docs               #  Run a local mkdocs server for documentation
 make lint               #  Lint the code
 make format             #  Format the code
-make tests              #  Run unit tests
+```
+
+## Testing
+
+````bash
+make test               #  Perform both unit and integration tests
+make unit-test          #  Perform unit tests
+make int-test           #  Perform integration tests
+make coverage           #  Get test coverage for both unit and integration tests
+make ut-coverage        #  Get test coverage for unit tests
+make it-civerage        #  Get test coverage for integration tests
 ```
 
 # Project Organization
@@ -38,4 +48,4 @@ make tests              #  Run unit tests
 ├── tests               # Unit tests
 ├── Makefile            # Makefile with convenience commands like `make test` or `make format`
 └── pyproject.toml      # Dependencies list and project configuration
-```
+````
