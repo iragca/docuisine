@@ -4,7 +4,7 @@ from docuisine.db.models import User
 from docuisine.schemas.annotations import DB_session
 from docuisine.schemas.user import UserCreate, UserOut
 from docuisine.services import UserService
-from docuisine.utils.errors import UserExistsError, UserNotFoundError
+from docuisine.utils import errors
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -22,7 +22,7 @@ def get_user(user_id: int, db: DB_session) -> UserOut:
     try:
         user: User = user_service.get_user(user_id=user_id)
         return UserOut.model_validate(user)
-    except UserNotFoundError:
+    except errors.UserNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with ID {user_id} not found.",
@@ -35,7 +35,7 @@ def create_user(user: UserCreate, db: DB_session) -> UserOut:
     try:
         new_user: User = user_service.create_user(user.email, user.password)
         return UserOut.model_validate(new_user)
-    except UserExistsError as e:
+    except errors.UserExistsError as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=e.message,
