@@ -50,9 +50,9 @@ unit-test:
 ut-coverage:
 	uv run pytest --cov-config=.coveragerc --cov=docuisine tests/unit/
 
-.PHONY: e2e-test
-e2e-test:
-	uv run pytest tests/e2e
+.PHONY: int-test
+int-test:
+	uv run pytest tests/integration
 
 ## Lint using ruff (use `make format` to do formatting)
 .PHONY: lint
