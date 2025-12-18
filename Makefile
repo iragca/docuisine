@@ -42,12 +42,16 @@ docs:
 	uv run mkdocs serve -f docs/mkdocs.yml -a localhost:7002
 
 ## Run tests
-.PHONY: test-unit
-test-unit:
+.PHONY: unit-test
+unit-test:
 	uv run pytest tests/unit
 
-.PHONY: test-e2e
-test-e2e:
+.PHONY: ut-coverage
+ut-coverage:
+	uv run pytest --cov-config=.coveragerc --cov=docuisine tests/unit/
+
+.PHONY: e2e-test
+e2e-test:
 	uv run pytest tests/e2e
 
 ## Lint using ruff (use `make format` to do formatting)
