@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from docuisine.schemas.annotations import Password
 
@@ -25,3 +25,5 @@ class UserOut(BaseModel):
     email: Optional[EmailStr] = Field(
         None, description="The user's email address", examples=["user@example.com"]
     )
+
+    model_config = ConfigDict(from_attributes=True)

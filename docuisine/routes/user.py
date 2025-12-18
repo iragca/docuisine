@@ -11,8 +11,8 @@ router = APIRouter(prefix="/users", tags=["Users"])
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[UserOut])
 def get_users(db: DB_session) -> list[UserOut]:
     user_service = UserService(db_session=db)
-    users: list[dict] = [user.as_dict() for user in user_service.get_all_users()]
-    return [UserOut(id=user["id"], email=user["email"]) for user in users]
+    users: list[User] = user_service.get_all_users()
+    return [UserOut.model_validate(user) for user in users]
 
 
 @router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=UserOut)
@@ -26,11 +26,11 @@ def get_user(user_id: int, db: DB_session) -> UserOut:
             detail=f"User with ID {user_id} not found.",
         )
 
-    return UserOut(**user.as_dict())
+    return UserOut.model_validate(user)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=UserOut)
 def create_user(user: UserCreate, db: DB_session) -> UserOut:
     user_service = UserService(db_session=db)
     new_user: User = user_service.create_user(user=user)
-    return UserOut(**new_user.as_dict())
+    return UserOut.model_validate(new_user)
