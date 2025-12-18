@@ -9,3 +9,9 @@ class Status(str, Enum):
 class Role(str, Enum):
     ADMIN = "admin"
     USER = "user"
+
+
+class Mode(str, Enum):
+    DEVELOPMENT = "development"
+    PRODUCTION = "production"
+    TESTING = "testing"

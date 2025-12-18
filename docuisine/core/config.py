@@ -37,5 +37,12 @@ class Environment:
             .strip()
         )
 
+    @classproperty
+    def MODE(self) -> str:
+        mode = os.getenv("MODE")
+        if mode is None:
+            raise EnvironmentError("MODE environment variable is not set.")
+        return mode
+
 
 env = Environment()
