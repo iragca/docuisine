@@ -67,6 +67,7 @@ nav:
       - contributing/index.md
       - Development: contributing/development.md
       - "Source Tree": contributing/source-tree.md
+      - Style Guides: contributing/artifacts/style-guides.md
       - Artifacts:
         - Database: contributing/artifacts/database.md
   - About:
