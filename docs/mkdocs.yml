@@ -5,10 +5,32 @@ repo_name: iragca/docuisine
 theme:
   name: material
   features:
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
     - content.code.copy
-    - navigation.tabs
+    # - content.code.select
+    # - content.footnote.tooltips
+    # - content.tabs.link
+    - content.tooltips
+    # - header.autohide
+    # - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    # - navigation.instant
+    # - navigation.instant.prefetch
+    # - navigation.instant.progress
+    # - navigation.prune
     - navigation.sections
-    - navigation.expand
+    - navigation.tabs
+    # - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+    # - toc.integrate
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
@@ -31,12 +53,13 @@ plugins:
 
 nav:
   - Home: index.md
-  - "Getting Help": getting-help.md
+  - Getting Help: getting-help.md
   - User Guide:
-      - Quick Start: user-guide/quick-start.md
+      - user-guide/index.md
       - Installation: user-guide/installation.md
       - Configuration: user-guide/configuration.md
   - Contributing:
+      - contributing/index.md
       - Development: contributing/development.md
       - "Source Tree": contributing/source-tree.md
   - About:
