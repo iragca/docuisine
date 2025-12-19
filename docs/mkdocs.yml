@@ -38,8 +38,13 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - admonition
+  - pymdownx.details
 
 plugins:
   - search
@@ -62,6 +67,8 @@ nav:
       - contributing/index.md
       - Development: contributing/development.md
       - "Source Tree": contributing/source-tree.md
+      - Artifacts:
+        - Database: contributing/artifacts/database.md
   - About:
       - Changelog: about/changelog.md
       - License: about/license.md
