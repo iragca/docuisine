@@ -22,5 +22,5 @@ def IS_PRODUCTION() -> bool:
     return env.MODE == Mode.PRODUCTION
 
 
-_engine = create_engine(env.DATABASE_URL, echo=not IS_PRODUCTION())
-SessionLocal = sessionmaker(bind=_engine)
+engine = create_engine(env.DATABASE_URL, echo=not IS_PRODUCTION())
+SessionLocal = sessionmaker(bind=engine)

@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from docuisine.db.database import _engine
+from docuisine.db.database import engine
 from docuisine.db.models.base import Base
 from docuisine.routes import health, root, user
 
@@ -11,11 +11,11 @@ from docuisine.routes import health, root, user
 async def on_startup(app: FastAPI):
     # Create database tables when the application starts
     try:
-        Base.metadata.create_all(bind=_engine)
+        Base.metadata.create_all(bind=engine)
         yield
     finally:
         # Dispose of the database engine when the application shuts down
-        await _engine.dispose()
+        await engine.dispose()
 
 
 app = FastAPI(lifespan=on_startup)
