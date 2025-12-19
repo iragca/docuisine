@@ -31,13 +31,16 @@ def test_get_users():
     assert len(data) == 2
     assert data[0]["username"] == "user1"
     assert data[1]["username"] == "user2"
+    assert data[0]["email"] is None
+    assert data[1]["email"] is None
     assert "id" in data[0]
     assert "id" in data[1]
 
     assert all("password" not in user for user in data)  # Ensure passwords are not exposed
+    assert all("email" in user for user in data)  # Ensure email field is present
 
 
-def test_get_user_not_found(client, mock_user_service):
+def test_get_user_not_found():
     def mock_user_service():
         mock = MagicMock()
         mock.get_user.side_effect = errors.UserNotFoundError(user_id=999)
@@ -52,7 +55,7 @@ def test_get_user_not_found(client, mock_user_service):
     assert data["detail"] == "User with ID 999 not found."
 
 
-def test_create_user_conflict(client):
+def test_create_user_conflict():
     ## Setup
     def mock_user_service():
         mock = MagicMock()
@@ -71,3 +74,29 @@ def test_create_user_conflict(client):
     assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
     assert data["detail"] == "User with username user1 already exists."
+
+
+def test_create_user_success():
+    ## Setup
+    def mock_user_service():
+        mock = MagicMock()
+        mock.create_user.return_value = User(
+            id=1, username="newuser", password="HashedPassword!23"
+        )
+        return mock
+
+    app.dependency_overrides[get_user_service] = mock_user_service
+    client = TestClient(app)
+
+    ## Test
+    user_data = {
+        "username": "newuser",
+        "password": "SomePassword!23",
+    }
+    response = client.post("/users/", json=user_data)
+    assert response.status_code == status.HTTP_201_CREATED, response.text
+    data = response.json()
+    assert data["username"] == "newuser"
+    assert data["id"] == 1
+    assert data["email"] is None
+    assert "password" not in data  # Ensure password is not exposed
