@@ -102,3 +102,17 @@ def test_get_all_users(db_session):
 
     assert result == users
     db_session.query.assert_called_once_with(User)
+
+
+def test_create_user_with_email(db_session):
+    service = UserService(db_session)
+
+    user = service.create_user("alice", "password123", email="alice@example.com")
+
+    assert isinstance(user, User)
+    assert user.username == "alice"
+    assert user.password == "hashed::password123"
+    assert user.email == "alice@example.com"
+
+    db_session.add.assert_called_once()
+    db_session.commit.assert_called_once()

@@ -12,7 +12,7 @@ class UserService:
     def __init__(self, db_session: Session):
         self.db_session: Session = db_session
 
-    def create_user(self, username: str, password: str) -> User:
+    def create_user(self, username: str, password: str, email: Optional[str] = None) -> User:
         """
         Create a new user in the database with an encrypted password.
 
@@ -39,7 +39,7 @@ class UserService:
         - This method commits the transaction immediately.
         """
         encrypted_password = hash_in_sha256(password)
-        new_user = User(username=username, password=encrypted_password)
+        new_user = User(username=username, password=encrypted_password, email=email)
         try:
             self.db_session.add(new_user)
             self.db_session.commit()
