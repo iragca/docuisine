@@ -40,7 +40,7 @@ async def get_user(user_id: int, user_service: User_Service) -> UserOut:
 )
 async def create_user(user: UserCreate, user_service: User_Service) -> UserOut:
     try:
-        new_user: User = user_service.create_user(user.username, user.password)
+        new_user: User = user_service.create_user(user.username, user.password, user.email)
         return UserOut.model_validate(new_user)
     except errors.UserExistsError as e:
         raise HTTPException(

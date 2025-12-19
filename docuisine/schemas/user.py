@@ -7,6 +7,9 @@ from docuisine.schemas.annotations import Password, Username
 
 class UserCreate(BaseModel):
     username: Username = Field(..., description="The user's username", examples=["user123"])
+    email: Optional[EmailStr] = Field(
+        None, description="The user's email address", examples=["user@example.com"]
+    )
     password: Password = Field(
         description="The user's password",
         examples=["strongPassword123!", "01fKl%#RJa4~Ob)'BER]"],
