@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+from fastapi import status
 from fastapi.testclient import TestClient
 
 from docuisine.db.models import User
@@ -25,7 +26,7 @@ def test_get_users():
 
     ## Test
     response = client.get("/users/")
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
     assert len(data) == 2
     assert data[0]["username"] == "user1"
@@ -46,7 +47,7 @@ def test_get_user_not_found(client, mock_user_service):
     client = TestClient(app)
 
     response = client.get("/users/999")
-    assert response.status_code == 404, response.text
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     data = response.json()
     assert data["detail"] == "User with ID 999 not found."
 
@@ -67,6 +68,6 @@ def test_create_user_conflict(client):
         "password": "SomePassword!23",
     }
     response = client.post("/users/", json=user_data)
-    assert response.status_code == 409, response.text
+    assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
     assert data["detail"] == "User with username user1 already exists."
