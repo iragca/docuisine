@@ -37,6 +37,9 @@ jobs:
         uv run ruff check
 
     - name: Test with pytest
+      env:
+        DATABASE_URL: "sqlite:///:memory:"
+        MODE: "testing"
       run: |
         source .venv/bin/activate
         uv run pytest tests
