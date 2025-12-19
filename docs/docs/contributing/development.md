@@ -7,7 +7,7 @@
 make requirements       #  Install dependencies
 ```
 
-Start the development server and start building!.
+Start the development server and start building!
 
 ```bash
 make dev
@@ -30,7 +30,7 @@ make format             #  Format the code
 
 ## Testing
 
-````bash
+```bash
 make test               #  Perform both unit and integration tests
 make unit-test          #  Perform unit tests
 make int-test           #  Perform integration tests
@@ -48,4 +48,4 @@ make it-civerage        #  Get test coverage for integration tests
 ├── tests               # Unit tests
 ├── Makefile            # Makefile with convenience commands like `make test` or `make format`
 └── pyproject.toml      # Dependencies list and project configuration
-````
+```
