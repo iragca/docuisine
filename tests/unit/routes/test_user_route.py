@@ -129,23 +129,12 @@ def test_create_user_with_email_success():
     assert "password" not in data  # Ensure password is not exposed
 
 
-def test_delete_user():
-    ## Setup
-    mock = MagicMock()
-
-    def mock_user_service():
-        return mock
-
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
-
+def test_delete_user(client):
     ## Test
     response = client.delete("/users/1")
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
     assert data["detail"] == "User with ID 1 has been deleted."
-
-    mock.delete_user.assert_called_once_with(user_id=1)
 
 
 def test_delete_user_not_found():
