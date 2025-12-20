@@ -50,3 +50,5 @@ dev = [
     "ty>=0.0.2",
 ]
 
+[tool.pytest.ini_options]
+addopts = "--cov-config=.coveragerc --cov=docuisine tests/ --cov-report html"

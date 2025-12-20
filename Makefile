@@ -41,34 +41,10 @@ prod:
 docs:
 	uv run mkdocs serve -f docs/mkdocs.yml -a localhost:7002
 
-## Run tests
-.PHONY: test unit-test int-test coverage ut-coverage it-coverage
-
-### Run all tests: unit and integration
+## Run unit and integration tests with pytest
+.PHONY: test
 test: 
-	@make unit-test 
-	@make int-test
-
-### Run only unit tests
-unit-test: 
-	uv run pytest tests/unit
-
-### Run only integration tests
-int-test: 
-	uv run pytest tests/integration
-
-### Run tests with coverage report
-coverage: 
-	uv run pytest --cov-config=.coveragerc --cov=docuisine tests/
-
-### Run unit tests with coverage report
-ut-coverage: 
-	uv run pytest --cov-config=.coveragerc --cov=docuisine tests/unit/
-
-### Run integration tests with coverage report
-it-coverage: 
-	uv run pytest --cov-config=.coveragerc --cov=docuisine tests/integration/
-
+	uv run pytest tests/
 
 ## Lint using ruff (use `make format` to do formatting)
 .PHONY: lint
