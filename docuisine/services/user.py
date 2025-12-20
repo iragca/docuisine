@@ -92,6 +92,14 @@ class UserService:
         return result
 
     def get_all_users(self) -> list[User]:
+        """
+        Retrieve all users from the database.
+
+        Returns
+        -------
+        list[User]
+            A list of all `User` instances in the database.
+        """
         return self.db_session.query(User).all()
 
     def delete_user(self, user_id: int) -> None:
