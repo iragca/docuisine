@@ -152,9 +152,76 @@ class UserService:
         -------
         Optional[User]
             The `User` instance if found, otherwise `None`.
-        
+
         Notes
         -----
         No business logic should be placed here.
         """
         return self.db_session.query(User).filter_by(username=username).first()
+
+    def update_user_email(self, user_id: int, new_email: str) -> User:
+        """
+        Update the email address of an existing user.
+
+        Parameters
+        ----------
+        user_id : int
+            The unique ID of the user whose email is to be updated.
+        new_email : str
+            The new email address to set for the user.
+
+        Returns
+        -------
+        User
+            The updated `User` instance.
+
+        Raises
+        ------
+        UserNotFoundError
+            If no user is found with the given ID.
+
+        Notes
+        -----
+        - This method commits the transaction immediately.
+        """
+        user = self._get_user_by_id(user_id)
+        if user is None:
+            raise UserNotFoundError(user_id=user_id)
+        user.email = new_email
+        self.db_session.commit()
+        return user
+
+
+    def update_user_password(self, user_id: int, new_password: str) -> User:
+        """
+        Update the password of an existing user.
+
+        Parameters
+        ----------
+        user_id : int
+            The unique ID of the user whose password is to be updated.
+        new_password : str
+            The new plain-text password to be encrypted and set for the user.
+
+        Returns
+        -------
+        User
+            The updated `User` instance.
+
+        Raises
+        ------
+        UserNotFoundError
+            If no user is found with the given ID.
+
+        Notes
+        -----
+        - The new password is encrypted using SHA-256 before storage.
+        - This method commits the transaction immediately.
+        """
+        user = self._get_user_by_id(user_id)
+        if user is None:
+            raise UserNotFoundError(user_id=user_id)
+        encrypted_password = hash_in_sha256(new_password)
+        user.password = encrypted_password
+        self.db_session.commit()
+        return user

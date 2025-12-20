@@ -147,3 +147,41 @@ def test_delete_user_not_found(db_session):
 
     with pytest.raises(UserNotFoundError):
         service.delete_user(user_id=999)
+
+
+def test_update_email_success(db_session):
+    user = User(id=1, username="alice", password="pw", email="old@example.com")
+    db_session.first.return_value = user
+
+    service = UserService(db_session)
+    updated_user = service.update_user_email(user_id=1, new_email="new@example.com")
+
+    assert updated_user.email == "new@example.com"
+    db_session.commit.assert_called_once()
+
+
+def test_update_email_user_not_found(db_session):
+    db_session.first.return_value = None
+    service = UserService(db_session)
+
+    with pytest.raises(UserNotFoundError):
+        service.update_user_email(user_id=999, new_email="new@example.com")
+
+
+def test_update_password_success(db_session):
+    user = User(id=1, username="alice", password="old_hashed_pw")
+    db_session.first.return_value = user
+
+    service = UserService(db_session)
+    updated_user = service.update_user_password(user_id=1, new_password="newpassword123")
+
+    assert updated_user.password == "hashed::newpassword123"
+    db_session.commit.assert_called_once()
+
+
+def test_update_password_user_not_found(db_session):
+    db_session.first.return_value = None
+    service = UserService(db_session)
+
+    with pytest.raises(UserNotFoundError):
+        service.update_user_password(user_id=999, new_password="newpassword123")
