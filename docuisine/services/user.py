@@ -74,7 +74,6 @@ class UserService:
         Notes
         -----
         - If both `user_id` and `username` are provided, `user_id` takes precedence.
-        - Returns `None` if no user is found with the given criteria.
         """
         if user_id is not None:
             result = self._get_user_by_id(user_id=user_id)
