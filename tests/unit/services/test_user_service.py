@@ -10,13 +10,15 @@ from docuisine.utils.errors import DuplicateEmailError, UserExistsError, UserNot
 
 @pytest.fixture(autouse=True)
 def mock_hash(monkeypatch):
+    """Mock the password hashing function to return a predictable value."""
     monkeypatch.setattr(
         "docuisine.services.user.hash_in_sha256",
         lambda pw: f"hashed::{pw}",
     )
 
 
-def test_create_user_success(db_session):
+def test_create_user_success(db_session: MagicMock):
+    """Test that creating a user works correctly."""
     service = UserService(db_session)
 
     user = service.create_user("alice", "password123")
@@ -29,7 +31,8 @@ def test_create_user_success(db_session):
     db_session.commit.assert_called_once()
 
 
-def test_create_user_duplicate_raises(db_session):
+def test_create_user_duplicate_raises(db_session: MagicMock):
+    """Test that creating a user with a duplicate username raises UserExistsError."""
     db_session.commit.side_effect = IntegrityError(
         statement=None,
         params=None,
@@ -45,14 +48,21 @@ def test_create_user_duplicate_raises(db_session):
     db_session.rollback.assert_called_once()
 
 
-def test_get_user_no_args_raises(db_session):
+def test_get_user_no_args_raises(db_session: MagicMock):
+    """Test that get_user raises ValueError when no arguments are provided."""
     service = UserService(db_session)
 
     with pytest.raises(ValueError, match="Either user ID or username must be provided."):
         service.get_user()
 
 
-def test_get_user_by_id(db_session):
+def test_get_user_by_id(db_session: MagicMock):
+    """
+    Test getting a user by ID works correctly.
+    By assuming we called the correct SQLAlchemy methods.
+    We are not testing SQLAlchemy itself here.
+    We are testing if we call their methods correctly.
+    """
     user = User(id=1, username="alice", password="pw")
     db_session.first.return_value = user
 
@@ -65,7 +75,13 @@ def test_get_user_by_id(db_session):
     assert result is user
 
 
-def test_get_user_by_username(db_session):
+def test_get_user_by_username(db_session: MagicMock):
+    """
+    Test getting a user by username works correctly.
+    By assuming we called the correct SQLAlchemy methods.
+    We are not testing SQLAlchemy itself here.
+    We are testing if we call their methods correctly.
+    """
     user = User(id=1, username="alice", password="pw")
     db_session.first.return_value = user
 
@@ -78,7 +94,8 @@ def test_get_user_by_username(db_session):
     assert result is user
 
 
-def test_get_user_not_found_by_id(db_session):
+def test_get_user_not_found_by_id(db_session: MagicMock):
+    """Test that getting a non-existent user by ID raises UserNotFoundError."""
     db_session.first.return_value = None
     service = UserService(db_session)
 
@@ -86,7 +103,8 @@ def test_get_user_not_found_by_id(db_session):
         service.get_user(user_id=999)
 
 
-def test_get_user_not_found_by_username(db_session):
+def test_get_user_not_found_by_username(db_session: MagicMock):
+    """Test that getting a non-existent user by username raises UserNotFoundError."""
     db_session.first.return_value = None
     service = UserService(db_session)
 
@@ -94,7 +112,8 @@ def test_get_user_not_found_by_username(db_session):
         service.get_user(username="nonexistent")
 
 
-def test_get_all_users(db_session):
+def test_get_all_users(db_session: MagicMock):
+    """Test that getting all users works correctly."""
     users = [
         User(id=1, username="alice", password="pw"),
         User(id=2, username="bob", password="pw"),
@@ -108,7 +127,8 @@ def test_get_all_users(db_session):
     db_session.query.assert_called_once_with(User)
 
 
-def test_create_user_with_email(db_session):
+def test_create_user_with_email(db_session: MagicMock):
+    """Test that creating a user with an email works correctly."""
     service = UserService(db_session)
 
     user = service.create_user("alice", "password123", email="alice@example.com")
@@ -122,7 +142,8 @@ def test_create_user_with_email(db_session):
     db_session.commit.assert_called_once()
 
 
-def test_delete_user_success(db_session):
+def test_delete_user_success(db_session: MagicMock):
+    """Test that deleting an existing user works correctly."""
     user = User(id=1, username="alice", password="pw")
     db_session.first.return_value = user
 
@@ -133,7 +154,8 @@ def test_delete_user_success(db_session):
     db_session.commit.assert_called_once()
 
 
-def test_delete_user_not_found(db_session):
+def test_delete_user_not_found(db_session: MagicMock):
+    """Test that deleting a non-existent user raises UserNotFoundError."""
     db_session.first.return_value = None
     service = UserService(db_session)
 
@@ -141,7 +163,8 @@ def test_delete_user_not_found(db_session):
         service.delete_user(user_id=999)
 
 
-def test_update_email_success(db_session):
+def test_update_email_success(db_session: MagicMock):
+    """Test that updating a user's email works correctly."""
     user = User(id=1, username="alice", password="pw", email="old@example.com")
     db_session.first.return_value = user
 
@@ -152,7 +175,8 @@ def test_update_email_success(db_session):
     db_session.commit.assert_called_once()
 
 
-def test_update_email_user_not_found(db_session):
+def test_update_email_user_not_found(db_session: MagicMock):
+    """Test that updating a user's email for a non-existent user raises UserNotFoundError."""
     db_session.first.return_value = None
     service = UserService(db_session)
 
@@ -160,7 +184,8 @@ def test_update_email_user_not_found(db_session):
         service.update_user_email(user_id=999, new_email="new@example.com")
 
 
-def test_update_password_success(db_session):
+def test_update_password_success(db_session: MagicMock):
+    """Test that updating a user's password works correctly."""
     user = User(id=1, username="alice", password="old_hashed_pw")
     db_session.first.return_value = user
 
@@ -171,7 +196,8 @@ def test_update_password_success(db_session):
     db_session.commit.assert_called_once()
 
 
-def test_update_password_user_not_found(db_session):
+def test_update_password_user_not_found(db_session: MagicMock):
+    """Test that updating a user's password for a non-existent user raises UserNotFoundError."""
     db_session.first.return_value = None
     service = UserService(db_session)
 
