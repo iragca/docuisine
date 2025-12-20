@@ -48,6 +48,7 @@ async def create_user(user: UserCreate, user_service: User_Service) -> UserOut:
             detail=e.message,
         )
 
+
 @router.delete(
     "/{user_id}",
     status_code=status.HTTP_200_OK,
