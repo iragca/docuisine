@@ -65,7 +65,7 @@ CREATE TABLE recipe_categories (
     PRIMARY KEY (recipe_id, category_id)
 ) INHERITS (default);
 
-CREATE TABLE store (
+CREATE TABLE stores (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     longitude DOUBLE PRECISION CHECK (longitude >= -180 AND longitude <= 180),
