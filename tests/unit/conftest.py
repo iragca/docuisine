@@ -18,3 +18,14 @@ def client(mock_user_service):
     app.dependency_overrides[get_user_service] = lambda: mock_user_service
     yield TestClient(app)
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def db_session():
+    session = MagicMock()
+    session.query.return_value = session
+    session.filter_by.return_value = session
+    session.delete.return_value = session
+    session.commit.return_value = session
+    session.add.return_value = session
+    return session
