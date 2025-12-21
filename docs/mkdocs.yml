@@ -37,15 +37,15 @@ theme:
   palette:
   - media: "(prefers-color-scheme: light)"
     scheme: default
-    primary: indigo
-    accent: indigo
+    primary: teal
+    accent: teal
     toggle:
       icon: material/weather-sunny
       name: Switch to dark mode
   - media: "(prefers-color-scheme: dark)"
     scheme: slate
     primary: black
-    accent: indigo
+    accent: teal
     toggle:
       icon: material/weather-night
       name: Switch to light mode
@@ -95,6 +95,7 @@ nav:
       - Development: contributing/development.md
       - "Source Tree": contributing/source-tree.md
       - Style Guides: contributing/style-guides.md
+      - Branding: contributing/branding.md
       - Artifacts:
         - API Reference: contributing/artifacts/api-reference.md
         - Database: contributing/artifacts/database.md
