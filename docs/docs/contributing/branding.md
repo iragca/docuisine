@@ -14,5 +14,6 @@ With background
 
 Light theme:
 
-- Primary: `#EDEAD5`
-- Accent: `#382110`
+- Primary: `#795649`
+- Accent: `#EDEAD5`
+- Light background: `#EEEEEE`
