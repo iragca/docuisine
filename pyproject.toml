@@ -21,6 +21,7 @@ dependencies = [
     "mkdocs",
     "mkdocs-material>=9.6.23",
     "mkdocstrings[python]>=0.30.1",
+    "neoteroi-mkdocs[mkdocsoad]>=1.2.0",
     "pip",
     "psycopg2-binary>=2.9.11",
     "pydantic>=2.12.4",
