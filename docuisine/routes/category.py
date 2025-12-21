@@ -27,10 +27,10 @@ async def get_category(category_id: int, category_service: Category_Service) -> 
     try:
         category: Category = category_service.get_category(category_id=category_id)
         return CategoryOut.model_validate(category)
-    except errors.CategoryNotFoundError:
+    except errors.CategoryNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Category with ID {category_id} not found.",
+            detail=e.message,
         )
 
 
@@ -74,10 +74,10 @@ async def update_category(
             category_id=category_id, name=category.name, description=category.description
         )
         return CategoryOut.model_validate(updated_category)
-    except errors.CategoryNotFoundError:
+    except errors.CategoryNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Category with ID {category_id} not found.",
+            detail=e.message,
         )
     except errors.CategoryExistsError as e:
         raise HTTPException(
@@ -97,8 +97,8 @@ async def delete_category(category_id: int, category_service: Category_Service) 
     try:
         category_service.delete_category(category_id=category_id)
         return Detail(detail=f"Category with ID {category_id} has been deleted.")
-    except errors.CategoryNotFoundError:
+    except errors.CategoryNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Category with ID {category_id} not found.",
+            detail=e.message,
         )
