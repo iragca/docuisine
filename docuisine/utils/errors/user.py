@@ -6,7 +6,7 @@ class UserExistsError(Exception):
 
     def __init__(self, username: str):
         self.username = username
-        self.message = f"User with username {self.username} already exists."
+        self.message = f"User with username '{self.username}' already exists."
         super().__init__(self.message)
 
 
@@ -17,9 +17,9 @@ class UserNotFoundError(Exception):
         self.user_id = user_id
         self.username = username
         if username is not None:
-            self.message = f"User with username {username} not found."
+            self.message = f"User with username '{username}' not found."
         else:
-            self.message = f"User with ID {self.user_id} not found."
+            self.message = f"User with ID '{self.user_id}' not found."
         super().__init__(self.message)
 
 

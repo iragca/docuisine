@@ -39,7 +39,7 @@ def test_create_user_existing_username(client, setup_and_teardown):
     response = client.post("/users/", json=user_data)
     assert response.status_code == 409, response.text
     data = response.json()
-    assert data["detail"] == "User with username anotheruser already exists."
+    assert data["detail"] == "User with username 'anotheruser' already exists."
 
 
 def test_create_user_with_email_success(client, setup_and_teardown):

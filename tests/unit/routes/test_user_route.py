@@ -52,7 +52,7 @@ def test_get_user_not_found():
     response = client.get("/users/999")
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     data = response.json()
-    assert data["detail"] == "User with ID 999 not found."
+    assert data["detail"] == "User with ID '999' not found."
 
 
 def test_create_user_conflict():
@@ -73,7 +73,7 @@ def test_create_user_conflict():
     response = client.post("/users/", json=user_data)
     assert response.status_code == status.HTTP_409_CONFLICT, response.text
     data = response.json()
-    assert data["detail"] == "User with username user1 already exists."
+    assert data["detail"] == "User with username 'user1' already exists."
 
 
 def test_create_user_success():
@@ -134,7 +134,7 @@ def test_delete_user(client):
     response = client.delete("/users/1")
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-    assert data["detail"] == "User with ID 1 has been deleted."
+    assert data["detail"] == "User with ID '1' has been deleted."
 
 
 def test_delete_user_not_found():
