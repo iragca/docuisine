@@ -83,7 +83,7 @@ def test_get_store_not_found():
     response = client.get("/stores/999")
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     data = response.json()
-    assert data["detail"] == "Store with ID '999' not found."
+    assert data["detail"] == "Store with ID 999 not found."
 
 
 def test_create_store_success():
@@ -226,7 +226,7 @@ def test_update_store_not_found():
     response = client.put("/stores/999", json=update_data)
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     data = response.json()
-    assert data["detail"] == "Store with ID '999' not found."
+    assert data["detail"] == "Store with ID 999 not found."
 
 
 def test_update_store_conflict():
@@ -261,7 +261,7 @@ def test_delete_store_success():
     response = client.delete("/stores/1")
     assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
-    assert data["detail"] == "Store with ID '1' has been deleted."
+    assert data["detail"] == "Store with ID 1 has been deleted."
 
 
 def test_delete_store_not_found():
@@ -278,4 +278,4 @@ def test_delete_store_not_found():
     response = client.delete("/stores/999")
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     data = response.json()
-    assert data["detail"] == "Store with ID '999' not found."
+    assert data["detail"] == "Store with ID 999 not found."

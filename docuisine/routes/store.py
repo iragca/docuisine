@@ -95,6 +95,6 @@ async def delete_store(store_id: int, store_service: Store_Service) -> Detail:
     """Delete a store by ID."""
     try:
         store_service.delete_store(store_id=store_id)
-        return Detail(detail=f"Store with ID '{store_id}' has been deleted.")
+        return Detail(detail=f"Store with ID {store_id} has been deleted.")
     except errors.StoreNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)

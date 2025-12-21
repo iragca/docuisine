@@ -19,7 +19,7 @@ class UserNotFoundError(Exception):
         if username is not None:
             self.message = f"User with username '{username}' not found."
         else:
-            self.message = f"User with ID '{self.user_id}' not found."
+            self.message = f"User with ID {self.user_id} not found."
         super().__init__(self.message)
 
 
