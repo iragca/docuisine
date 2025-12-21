@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from docuisine.db.database import engine
 from docuisine.db.models.base import Base
-from docuisine.routes import category, health, ingredient, root, user
+from docuisine.routes import category, health, ingredient, root, store, user
 
 
 @asynccontextmanager
@@ -24,5 +24,6 @@ app = FastAPI(lifespan=on_startup)
 app.include_router(root.router)
 app.include_router(user.router)
 app.include_router(category.router)
+app.include_router(store.router)
 app.include_router(ingredient.router)
 app.include_router(health.router)

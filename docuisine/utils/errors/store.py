@@ -19,5 +19,5 @@ class StoreNotFoundError(Exception):
         if name is not None:
             self.message = f"Store with name '{name}' not found."
         else:
-            self.message = f"Store with ID {self.store_id} not found."
+            self.message = f"Store with ID '{self.store_id}' not found."
         super().__init__(self.message)
