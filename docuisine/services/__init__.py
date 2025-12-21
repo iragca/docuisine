@@ -1,5 +1,5 @@
-from .categories import CategoryService
-from .ingredients import IngredientService
+from .category import CategoryService
+from .ingredient import IngredientService
 from .store import StoreService
 from .users import UserService
 
