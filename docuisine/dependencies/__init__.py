@@ -1,5 +1,11 @@
 from .db import DB_Session
-from .services import Category_Service, Ingredient_Service, Store_Service, User_Service
+from .services import (
+    Category_Service,
+    Ingredient_Service,
+    Recipe_Service,
+    Store_Service,
+    User_Service,
+)
 
 __all__ = [
     "DB_Session",
@@ -7,4 +13,5 @@ __all__ = [
     "Category_Service",
     "Ingredient_Service",
     "Store_Service",
+    "Recipe_Service",
 ]
