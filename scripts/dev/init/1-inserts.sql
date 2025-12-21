@@ -5,8 +5,8 @@ BEGIN;
 -- =====================
 INSERT INTO users (id, username, email, password, role, preview_img, img)
 VALUES
-    (1, 'alice', 'alice@example.com', 'hashed_password_1', 'user', NULL, NULL),
-    (2, 'bob', 'bob@example.com', 'hashed_password_2', 'admin', NULL, NULL);
+    (1, 'alice', 'alice@example.com', 'hashed_password_1P!', 'user', NULL, NULL),
+    (2, 'bob', 'bob@example.com', 'hashed_password_2P!', 'admin', NULL, NULL);
 
 -- =====================
 -- INGREDIENTS
