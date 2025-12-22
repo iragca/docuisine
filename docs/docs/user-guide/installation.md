@@ -155,7 +155,7 @@ POSTGRES_USER=user
 
 Finally, build and run with `docker compose`.
 
-```bash title="Terimal"
+```bash title="Terminal"
 docker compose build \
   --no-cache \
   --build-arg COMMIT_HASH=$(git rev-parse --short HEAD) \
