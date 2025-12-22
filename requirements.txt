@@ -1,0 +1,6 @@
+email-validator>=2.3.0
+fastapi[standard]>=0.121.1
+psycopg2-binary>=2.9.11
+pydantic>=2.12.4
+python-dotenv
+sqlalchemy>=2.0.45
