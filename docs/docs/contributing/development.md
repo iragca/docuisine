@@ -52,3 +52,34 @@ The coverage report is printed on the console and is also generated as an HTML f
 ├── Makefile            # Makefile with convenience commands like `make test` or `make format`
 └── pyproject.toml      # Dependencies list and project configuration
 ```
+
+# Building docker images
+
+Building a production ready image from the repo:
+
+```bash
+docker build \
+  --no-cache \
+  --build-arg COMMIT_HASH=$(git rev-parse --short HEAD) \
+  --build-arg VERSION=$(uv version --short) \
+  -t docuisine:backend-$(uv version --short) \
+  -t docuisine:backend \
+  .
+```
+
+or build and run using `docker compose`:
+
+```bash
+docker compose build \
+  --no-cache \
+  --build-arg COMMIT_HASH=$(git rev-parse --short HEAD) \
+  --build-arg VERSION=$(uv version --short)
+
+docker compose up
+```
+
+# Microservices API
+
+- The PostgreSQL should be accessible at port 5432
+- The FastAPI backend should be accessible at port 7000
+- The frontend should be accessible at port 8000

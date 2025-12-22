@@ -1,0 +1,59 @@
+# This docker-compose file is a production-ready setup for the Docuisine backend service
+# It defines services for the backend application and a PostgreSQL database
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        COMMIT_HASH: ${COMMIT_HASH}
+        VERSION: ${VERSION}
+    container_name: docuisine_backend
+    restart: always
+    ports:
+      - "${DOCUISINE_BACKEND_PORT:-7000}:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-docuisine}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+  db:
+    hostname: ${POSTGRES_HOST:-localhost}
+    image: postgres:18.1
+    container_name: docuisine_postgres
+    restart: always
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-docuisine}
+    volumes:
+      - docuisine_db_data:/var/lib/postgresql/
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready",
+          "-U",
+          "${POSTGRES_USER:-user}",
+          "-d",
+          "${POSTGRES_DB:-docuisine}",
+          "-h",
+          "${POSTGRES_HOST:-localhost}",
+          "-p",
+          "5432",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  docuisine_db_data:
