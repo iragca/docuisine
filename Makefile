@@ -71,7 +71,7 @@ patch:
 	@uv version --bump patch
 	@git add pyproject.toml
 	@git add uv.lock
-	@git commit -m "chore: bump patch version"
+	@git commit -m "chore: bump patch version to $$(uv version --short)"
 
 
 ## Set up Python interpreter environment
