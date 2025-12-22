@@ -145,7 +145,7 @@ POSTGRES_USER=user
 
 ??? info
 
-    These variables can be left as is, but you can change them as like if you know what you are doing.
+    These variables can be left as is, but you can change them if you know what you are doing.
     ``` bash title=".env"
     MODE=production             # Either production, development, or testing
     POSTGRES_DB=docuisine
