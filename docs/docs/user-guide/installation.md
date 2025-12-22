@@ -20,7 +20,7 @@ services:
     container_name: docuisine_backend
     restart: always
     ports:
-      - "${DOCUISINE_BACKEND_PORT:-8000}:8000"
+      - "${DOCUISINE_BACKEND_PORT:-7000}:8000"
     environment:
       DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-docuisine}
     depends_on:
@@ -90,14 +90,14 @@ All required configuration files are downloaded directly from the repository.
     docker compose up -d
     ```
 
-    Docuisine is now accesible at http://localhost:8000. If port configuration was set to `8000`.
+    Docuisine is now accessible at http://localhost:8000. If port configuration was set to `8000`.
 
 ### Environment Variables
 
 These environment variables are recommended to be customized as you see fit.
 
 ```bash title=".env"
-DOCUISINE_BACKEND_PORT=8000
+DOCUISINE_BACKEND_PORT=7000
 POSTGRES_PASSWORD=password
 POSTGRES_USER=user
 ```
@@ -138,7 +138,7 @@ cp .env.example .env
 Make sure to edit these variables for security and host machine compatibility purposes.
 
 ```bash title=".env"
-DOCUISINE_BACKEND_PORT=8000
+DOCUISINE_BACKEND_PORT=7000
 POSTGRES_PASSWORD=password
 POSTGRES_USER=user
 ```
