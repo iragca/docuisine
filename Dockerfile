@@ -1,6 +1,6 @@
 # This Dockerfile is a production-ready container for the Docuisine backend service
 # It uses the Astral UV base image with Python 3.13 on Debian Bookworm
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 
 WORKDIR /app
 
