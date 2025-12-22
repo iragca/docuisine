@@ -1,4 +1,4 @@
-# Getting started
+# Development
 
 - We work with uv. You can install it [here](https://docs.astral.sh/uv/guides/install-python/)
 - Docker with docker compose. [Install instructions](https://docs.docker.com/compose/install/).
@@ -62,14 +62,13 @@ docker build \
   --no-cache \
   --build-arg COMMIT_HASH=$(git rev-parse --short HEAD) \
   --build-arg VERSION=$(uv version --short) \
-  -t docuisine:backend-$(uv version --short) \
-  -t docuisine:backend \
+  -t iragca/docuisine:backend-$(uv version --short) \
+  -t iragca/docuisine:backend \
   .
 ```
-Then tag and push to Docker Hub
+Then push to Docker Hub
 ```bash
-docker tag docuisine:backend iragca/docuisine-backend:latest
-docker push iragca/docuisine-backend:latest
+docker push iragca/docuisine --all-tags
 ```
 
 or build and run using `docker compose`:
