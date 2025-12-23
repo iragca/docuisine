@@ -157,7 +157,7 @@ class TestRegularUser:
 
 
 class TestAdminUser:
-    def test_update_ingredient_success(self, app_regular_user: MagicMock):
+    def test_update_ingredient_success(self, app_admin: MagicMock):
         """Test updating an ingredient successfully."""
 
         def mock_ingredient_service():
@@ -168,7 +168,7 @@ class TestAdminUser:
             return mock
 
         app.dependency_overrides[get_ingredient_service] = mock_ingredient_service
-        client = TestClient(app_regular_user)
+        client = TestClient(app_admin)
 
         update_data = {"name": "Brown Sugar", "description": "Updated description"}
         response = client.put("/ingredients/1", json=update_data)
@@ -178,7 +178,7 @@ class TestAdminUser:
         assert data["name"] == "Brown Sugar"
         assert data["description"] == "Updated description"
 
-    def test_update_ingredient_partial(self, app_regular_user: MagicMock):
+    def test_update_ingredient_partial(self, app_admin: MagicMock):
         """Test updating only name or description."""
 
         def mock_ingredient_service():
@@ -189,7 +189,7 @@ class TestAdminUser:
             return mock
 
         app.dependency_overrides[get_ingredient_service] = mock_ingredient_service
-        client = TestClient(app_regular_user)
+        client = TestClient(app_admin)
 
         update_data = {"name": "Updated Name"}
         response = client.put("/ingredients/1", json=update_data)
@@ -208,7 +208,7 @@ class TestAdminUser:
             return mock
 
         app.dependency_overrides[get_ingredient_service] = mock_ingredient_service
-        client = TestClient(app)
+        client = TestClient(app_admin)
 
         update_data = {"recipe_id": 10}
         response = client.put("/ingredients/1", json=update_data)
