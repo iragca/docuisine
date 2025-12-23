@@ -75,7 +75,7 @@ async def create_recipe(
         raise errors.ForbiddenAccessError
     try:
         new_recipe: Recipe = recipe_service.create_recipe(
-            user_id=recipe.user_id,
+            user_id=authenticated_user.id,
             name=recipe.name,
             cook_time_sec=recipe.cook_time_sec,
             prep_time_sec=recipe.prep_time_sec,
@@ -110,6 +110,9 @@ async def update_recipe(
     """
     if authenticated_user.role not in {Role.ADMIN, Role.USER}:
         raise errors.ForbiddenAccessError
+    if authenticated_user.role == Role.USER:
+        if recipe_id not in {r.id for r in authenticated_user.recipes}:
+            raise errors.ForbiddenAccessError
     try:
         updated: Recipe = recipe_service.update_recipe(
             recipe_id=recipe_id,
@@ -143,6 +146,9 @@ async def delete_recipe(
     """
     if authenticated_user.role not in {Role.ADMIN, Role.USER}:
         raise errors.ForbiddenAccessError
+    if authenticated_user.role == Role.USER:
+        if recipe_id not in {r.id for r in authenticated_user.recipes}:
+            raise errors.ForbiddenAccessError
     try:
         recipe_service.delete_recipe(recipe_id=recipe_id)
         return Detail(detail=f"Recipe with ID {recipe_id} has been deleted.")
