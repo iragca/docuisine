@@ -8,6 +8,11 @@ router = APIRouter(prefix="/health", tags=["Health"])
 
 @router.get("/", response_model=HealthCheck)
 def health_check():
+    """
+    Health check endpoint.
+
+    Access Level: Public
+    """
     return HealthCheck(
         status=Status.HEALTHY,
         commit_hash=env.COMMIT_HASH,

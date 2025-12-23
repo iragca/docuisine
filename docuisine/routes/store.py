@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
 
 from docuisine.db.models import Store
-from docuisine.dependencies import Store_Service
+from docuisine.dependencies import AuthenticatedUser, Store_Service
 from docuisine.schemas.common import Detail
+from docuisine.schemas.enums import Role
 from docuisine.schemas.store import StoreCreate, StoreOut, StoreUpdate
 from docuisine.utils import errors
 
@@ -11,7 +12,11 @@ router = APIRouter(prefix="/stores", tags=["Stores"])
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[StoreOut])
 async def get_stores(store_service: Store_Service) -> list[StoreOut]:
-    """Get all stores."""
+    """
+    Get all stores.
+
+    Access Level: Public
+    """
     stores: list[Store] = store_service.get_all_stores()
     return [StoreOut.model_validate(store) for store in stores]
 
@@ -23,7 +28,11 @@ async def get_stores(store_service: Store_Service) -> list[StoreOut]:
     responses={status.HTTP_404_NOT_FOUND: {"model": Detail}},
 )
 async def get_store(store_id: int, store_service: Store_Service) -> StoreOut:
-    """Get a store by ID."""
+    """
+    Get a store by ID.
+
+    Access Level: Public
+    """
     try:
         store: Store = store_service.get_store(store_id=store_id)
         return StoreOut.model_validate(store)
@@ -37,8 +46,18 @@ async def get_store(store_id: int, store_service: Store_Service) -> StoreOut:
     response_model=StoreOut,
     responses={status.HTTP_409_CONFLICT: {"model": Detail}},
 )
-async def create_store(store: StoreCreate, store_service: Store_Service) -> StoreOut:
-    """Create a new store."""
+async def create_store(
+    store: StoreCreate,
+    store_service: Store_Service,
+    authenticated_user: AuthenticatedUser,
+) -> StoreOut:
+    """
+    Create a new store.
+
+    Access Level: Admin, User
+    """
+    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
+        raise errors.ForbiddenAccessError
     try:
         new_store: Store = store_service.create_store(
             name=store.name,
@@ -64,9 +83,18 @@ async def create_store(store: StoreCreate, store_service: Store_Service) -> Stor
     },
 )
 async def update_store(
-    store_id: int, store: StoreUpdate, store_service: Store_Service
+    store_id: int,
+    store: StoreUpdate,
+    store_service: Store_Service,
+    authenticated_user: AuthenticatedUser,
 ) -> StoreOut:
-    """Update a store by ID."""
+    """
+    Update a store by ID.
+
+    Access Level: Admin, User
+    """
+    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
+        raise errors.ForbiddenAccessError
     try:
         updated: Store = store_service.update_store(
             store_id=store_id,
@@ -91,8 +119,16 @@ async def update_store(
     response_model=Detail,
     responses={status.HTTP_404_NOT_FOUND: {"model": Detail}},
 )
-async def delete_store(store_id: int, store_service: Store_Service) -> Detail:
-    """Delete a store by ID."""
+async def delete_store(
+    store_id: int, store_service: Store_Service, authenticated_user: AuthenticatedUser
+) -> Detail:
+    """
+    Delete a store by ID.
+
+    Access Level: Admin, User
+    """
+    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
+        raise errors.ForbiddenAccessError
     try:
         store_service.delete_store(store_id=store_id)
         return Detail(detail=f"Store with ID {store_id} has been deleted.")
