@@ -87,7 +87,7 @@ class TestRegularUser:
             return mock
 
         app.dependency_overrides[get_ingredient_service] = mock_ingredient_service
-        client = TestClient(app)
+        client = TestClient(app_regular_user)
 
         ingredient_data = {"name": "Eggs", "description": "Large eggs"}
         response = client.post("/ingredients/", json=ingredient_data)
@@ -208,7 +208,7 @@ class TestAdminUser:
             return mock
 
         app.dependency_overrides[get_ingredient_service] = mock_ingredient_service
-        client = TestClient(app)
+        client = TestClient(app_admin)
 
         update_data = {"recipe_id": 10}
         response = client.put("/ingredients/1", json=update_data)
