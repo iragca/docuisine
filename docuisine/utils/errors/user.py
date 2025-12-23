@@ -31,10 +31,3 @@ class DuplicateEmailError(Exception):
         self.message = f"Email '{self.email}' is already associated with another user."
         super().__init__(self.message)
 
-
-class InvalidPasswordError(Exception):
-    """Exception raised when a provided password is invalid."""
-
-    def __init__(self, message: str = "The provided password is invalid."):
-        self.message = message
-        super().__init__(self.message)
