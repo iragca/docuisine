@@ -15,7 +15,7 @@ AuthToken = Annotated[str, Depends(OAuth2_Scheme)]
 AuthForm = Annotated[OAuth2PasswordRequestForm, Depends()]
 
 
-async def get_current_user_token(token: AuthToken, user_service: User_Service):
+async def get_client_user(token: AuthToken, user_service: User_Service):
     try:
         user = user_service.authorize_user(token=token)
     except errors.InvalidCredentialsError as e:
@@ -27,4 +27,4 @@ async def get_current_user_token(token: AuthToken, user_service: User_Service):
     return user
 
 
-AuthenticatedUser = Annotated[User, Depends(get_current_user_token)]
+AuthenticatedUser = Annotated[User, Depends(get_client_user)]
