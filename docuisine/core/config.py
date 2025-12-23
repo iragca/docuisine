@@ -33,8 +33,10 @@ class Environment:
         return mode
 
     @property
-    def JWT_SECRET_KEY(self) -> Optional[str]:
-        secret_key = os.getenv("JWT_SECRET_KEY")
+    def JWT_SECRET_KEY(self) -> str:
+        secret_key = os.getenv("JWT_SECRET_KEY", None)
+        if secret_key is None:
+            raise EnvironmentError("JWT_SECRET_KEY environment variable is not set.")
         return secret_key
 
     @property
