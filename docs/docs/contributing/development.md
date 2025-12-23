@@ -110,7 +110,7 @@ Everything `Public` can do, can be done by `User` and then some. Everything that
 
 ### Route Access
 
-No `PUT` or `DELETE` method should not be accessible to `Public` aside from `POST - /users/` when creating a user or `POST - /auth/token` when logging in.
+No `PUT` or `DELETE` method should be accessible to `Public` aside from `POST - /users/` when creating a user or `POST - /auth/token` when logging in.
 
 Default developer accounts:
 
