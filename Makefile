@@ -77,6 +77,14 @@ patch:
 	@git add uv.lock
 	@git commit -m "chore: bump patch version to $$(uv version --short)"
 
+## Bump project version with minor update
+.PHONY: minor
+minor:
+	@uv version --bump minor
+	@git add pyproject.toml
+	@git add uv.lock
+	@git commit -m "chore: bump minor version to $$(uv version --short)"
+
 
 ## Set up Python interpreter environment
 .PHONY: create_environment
