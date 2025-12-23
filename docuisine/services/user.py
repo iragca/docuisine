@@ -274,6 +274,8 @@ class UserService:
         ------
         UserNotFoundError
             If no user is found with the given ID or username.
+        InvalidPasswordError
+            If the provided password does not match the stored password.
         ValueError
             If both `id` and `username` are `None`.
 
@@ -283,8 +285,7 @@ class UserService:
         """
         user = self.get_user(user_id=id, username=username)
         if not self._verify_password(password, user.password):
-            return False
-
+            raise InvalidPasswordError
         return user
 
     def _verify_password(self, plain_password: str, hashed_password: str) -> bool:

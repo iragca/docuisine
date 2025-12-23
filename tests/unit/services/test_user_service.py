@@ -8,7 +8,12 @@ from docuisine.db.models import User
 from docuisine.schemas.auth import JWTConfig
 from docuisine.schemas.enums import JWTAlgorithm
 from docuisine.services import UserService
-from docuisine.utils.errors import DuplicateEmailError, UserExistsError, UserNotFoundError
+from docuisine.utils.errors import (
+    DuplicateEmailError,
+    InvalidPasswordError,
+    UserExistsError,
+    UserNotFoundError,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -255,9 +260,8 @@ def test_authenticate_user_wrong_password(db_session: MagicMock, monkeypatch):
     )
 
     service = UserService(db_session)
-    result = service.authenticate_user(username="alice", password="wrongpassword")
-
-    assert result is False
+    with pytest.raises(InvalidPasswordError):
+        service.authenticate_user(username="alice", password="wrongpassword")
 
 
 def test_authenticate_user_not_found(db_session: MagicMock):
