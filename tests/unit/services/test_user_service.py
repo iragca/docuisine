@@ -9,12 +9,6 @@ from docuisine.schemas.auth import JWTConfig
 from docuisine.schemas.enums import JWTAlgorithm
 from docuisine.services import UserService
 from docuisine.utils import errors
-from docuisine.utils.errors import (
-    DuplicateEmailError,
-    InvalidPasswordError,
-    UserExistsError,
-    UserNotFoundError,
-)
 
 
 @pytest.fixture(autouse=True)
@@ -50,7 +44,7 @@ def test_create_user_duplicate_raises(db_session: MagicMock):
 
     service = UserService(db_session)
 
-    with pytest.raises(UserExistsError) as exc:
+    with pytest.raises(errors.UserExistsError) as exc:
         service.create_user("alice", "password123")
 
     assert "alice" in str(exc.value)
@@ -108,7 +102,7 @@ def test_get_user_not_found_by_id(db_session: MagicMock):
     db_session.first.return_value = None
     service = UserService(db_session)
 
-    with pytest.raises(UserNotFoundError):
+    with pytest.raises(errors.UserNotFoundError):
         service.get_user(user_id=999)
 
 
@@ -117,7 +111,7 @@ def test_get_user_not_found_by_username(db_session: MagicMock):
     db_session.first.return_value = None
     service = UserService(db_session)
 
-    with pytest.raises(UserNotFoundError):
+    with pytest.raises(errors.UserNotFoundError):
         service.get_user(username="nonexistent")
 
 
@@ -168,7 +162,7 @@ def test_delete_user_not_found(db_session: MagicMock):
     db_session.first.return_value = None
     service = UserService(db_session)
 
-    with pytest.raises(UserNotFoundError):
+    with pytest.raises(errors.UserNotFoundError):
         service.delete_user(user_id=999)
 
 
@@ -189,7 +183,7 @@ def test_update_email_user_not_found(db_session: MagicMock):
     db_session.first.return_value = None
     service = UserService(db_session)
 
-    with pytest.raises(UserNotFoundError):
+    with pytest.raises(errors.UserNotFoundError):
         service.update_user_email(user_id=999, new_email="new@example.com")
 
 
@@ -212,7 +206,7 @@ def test_update_password_user_not_found(db_session: MagicMock):
     db_session.first.return_value = None
     service = UserService(db_session)
 
-    with pytest.raises(UserNotFoundError):
+    with pytest.raises(errors.UserNotFoundError):
         service.update_user_password(
             user_id=999, old_password="oldpassword123", new_password="newpassword123"
         )
@@ -228,7 +222,7 @@ def test_update_user_duplicate_email_raises(db_session: MagicMock):
 
     service = UserService(db_session)
 
-    with pytest.raises(DuplicateEmailError) as exc:
+    with pytest.raises(errors.DuplicateEmailError) as exc:
         service.update_user_email(user_id=1, new_email="example@mail.com")
 
     db_session.commit.assert_called_once()
@@ -261,7 +255,7 @@ def test_authenticate_user_wrong_password(db_session: MagicMock, monkeypatch):
     )
 
     service = UserService(db_session)
-    with pytest.raises(InvalidPasswordError):
+    with pytest.raises(errors.InvalidPasswordError):
         service.authenticate_user(username="alice", password="wrongpassword")
 
 
@@ -271,7 +265,7 @@ def test_authenticate_user_not_found(db_session: MagicMock):
 
     service = UserService(db_session)
 
-    with pytest.raises(UserNotFoundError):
+    with pytest.raises(errors.UserNotFoundError):
         service.authenticate_user(username="nonexistent", password="password123")
 
 

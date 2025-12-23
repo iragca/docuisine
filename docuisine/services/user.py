@@ -7,13 +7,7 @@ from sqlalchemy.orm import Session
 
 from docuisine.db.models import User
 from docuisine.schemas.auth import JWTConfig
-from docuisine.utils.errors import (
-    DuplicateEmailError,
-    InvalidCredentialsError,
-    InvalidPasswordError,
-    UserExistsError,
-    UserNotFoundError,
-)
+from docuisine.utils import errors
 from docuisine.utils.hashing import hash_in_sha256
 
 
@@ -55,7 +49,7 @@ class UserService:
             self.db_session.commit()
         except IntegrityError:
             self.db_session.rollback()
-            raise UserExistsError(username)
+            raise errors.UserExistsError(username)
         return new_user
 
     def get_user(self, user_id: Optional[int] = None, username: Optional[str] = None) -> User:
@@ -94,9 +88,9 @@ class UserService:
 
         if result is None:
             raise (
-                UserNotFoundError(user_id=user_id)
+                errors.UserNotFoundError(user_id=user_id)
                 if user_id is not None
-                else UserNotFoundError(username=username)
+                else errors.UserNotFoundError(username=username)
             )
 
         return result
@@ -132,7 +126,7 @@ class UserService:
         """
         user = self._get_user_by_id(user_id)
         if user is None:
-            raise UserNotFoundError(user_id=user_id)
+            raise errors.UserNotFoundError(user_id=user_id)
         self.db_session.delete(user)
         self.db_session.commit()
 
@@ -206,13 +200,13 @@ class UserService:
         """
         user = self._get_user_by_id(user_id)
         if user is None:
-            raise UserNotFoundError(user_id=user_id)
+            raise errors.UserNotFoundError(user_id=user_id)
         user.email = new_email
         try:
             self.db_session.commit()
         except IntegrityError:
             self.db_session.rollback()
-            raise DuplicateEmailError(new_email)
+            raise errors.DuplicateEmailError(new_email)
         return user
 
     def update_user_password(self, user_id: int, old_password: str, new_password: str) -> User:
@@ -243,9 +237,9 @@ class UserService:
         """
         user = self._get_user_by_id(user_id)
         if user is None:
-            raise UserNotFoundError(user_id=user_id)
+            raise errors.UserNotFoundError(user_id=user_id)
         if not self._verify_password(old_password, user.password):
-            raise InvalidPasswordError("Old password does not match.")
+            raise errors.InvalidPasswordError("Old password does not match.")
         encrypted_password = hash_in_sha256(new_password)
         user.password = encrypted_password
         self.db_session.commit()
@@ -286,7 +280,7 @@ class UserService:
         """
         user = self.get_user(user_id=id, username=username)
         if not self._verify_password(password, user.password):
-            raise InvalidPasswordError
+            raise errors.InvalidPasswordError
         return user
 
     def _verify_password(self, plain_password: str, hashed_password: str) -> bool:
@@ -372,8 +366,8 @@ class UserService:
             )
             username: str = payload.get("sub")
             if username is None:
-                raise InvalidCredentialsError
+                raise errors.InvalidCredentialsError
             user = self.get_user(username=username)
-        except (jwt.InvalidTokenError, UserNotFoundError) as e:
-            raise InvalidCredentialsError from e
+        except (jwt.InvalidTokenError, errors.UserNotFoundError) as e:
+            raise errors.InvalidCredentialsError from e
         return user
