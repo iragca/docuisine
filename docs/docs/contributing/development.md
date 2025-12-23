@@ -146,11 +146,11 @@ Default developer accounts:
 
 #### Ingredients
 
-| Method   | Route                       | Access      |
-| -------- | --------------------------- | ----------- |
-| `POST`   | /ingdreints/                | Admin, User |
-| `PUT`    | /ingdreints/{ingredient_id} | Admin, User |
-| `DELETE` | /ingdreints/{ingredient_id} | Admin, User |
+| Method   | Route                        | Access      |
+| -------- | ---------------------------- | ----------- |
+| `POST`   | /ingredients/                | Admin, User |
+| `PUT`    | /ingredients/{ingredient_id} | Admin, User |
+| `DELETE` | /ingredients/{ingredient_id} | Admin, User |
 
 #### Recipes
 
