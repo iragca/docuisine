@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "docuisine"
-version = "0.0.2"
+version = "0.1.0"
 description = "Backend for the Docuisine application."
 authors = [
   { name = "Chris Irag", email = "iragca@pm.me"},
@@ -20,6 +20,7 @@ dependencies = [
     "fastapi[standard]>=0.121.1",
     "psycopg2-binary>=2.9.11",
     "pydantic>=2.12.4",
+    "pyjwt>=2.10.1",
     "python-dotenv",
     "sqlalchemy>=2.0.45",
 ]

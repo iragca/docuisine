@@ -1,21 +1,20 @@
-from typing import Optional
+import datetime
+from typing import Optional, Union
 
+import jwt
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from docuisine.db.models import User
-from docuisine.utils.errors import (
-    DuplicateEmailError,
-    InvalidPasswordError,
-    UserExistsError,
-    UserNotFoundError,
-)
+from docuisine.schemas.auth import JWTConfig
+from docuisine.utils import errors
 from docuisine.utils.hashing import hash_in_sha256
 
 
 class UserService:
-    def __init__(self, db_session: Session):
+    def __init__(self, db_session: Session, jwt_config: Optional[JWTConfig] = None):
         self.db_session: Session = db_session
+        self.jwt_config = jwt_config
 
     def create_user(self, username: str, password: str, email: Optional[str] = None) -> User:
         """
@@ -50,7 +49,7 @@ class UserService:
             self.db_session.commit()
         except IntegrityError:
             self.db_session.rollback()
-            raise UserExistsError(username)
+            raise errors.UserExistsError(username)
         return new_user
 
     def get_user(self, user_id: Optional[int] = None, username: Optional[str] = None) -> User:
@@ -89,9 +88,9 @@ class UserService:
 
         if result is None:
             raise (
-                UserNotFoundError(user_id=user_id)
+                errors.UserNotFoundError(user_id=user_id)
                 if user_id is not None
-                else UserNotFoundError(username=username)
+                else errors.UserNotFoundError(username=username)
             )
 
         return result
@@ -127,7 +126,7 @@ class UserService:
         """
         user = self._get_user_by_id(user_id)
         if user is None:
-            raise UserNotFoundError(user_id=user_id)
+            raise errors.UserNotFoundError(user_id=user_id)
         self.db_session.delete(user)
         self.db_session.commit()
 
@@ -201,13 +200,13 @@ class UserService:
         """
         user = self._get_user_by_id(user_id)
         if user is None:
-            raise UserNotFoundError(user_id=user_id)
+            raise errors.UserNotFoundError(user_id=user_id)
         user.email = new_email
         try:
             self.db_session.commit()
         except IntegrityError:
             self.db_session.rollback()
-            raise DuplicateEmailError(new_email)
+            raise errors.DuplicateEmailError(new_email)
         return user
 
     def update_user_password(self, user_id: int, old_password: str, new_password: str) -> User:
@@ -238,11 +237,137 @@ class UserService:
         """
         user = self._get_user_by_id(user_id)
         if user is None:
-            raise UserNotFoundError(user_id=user_id)
-        old_password_encrypted = hash_in_sha256(old_password)
-        if user.password != old_password_encrypted:
-            raise InvalidPasswordError("Old password does not match.")
+            raise errors.UserNotFoundError(user_id=user_id)
+        if not self._verify_password(old_password, user.password):
+            raise errors.InvalidPasswordError("Old password does not match.")
         encrypted_password = hash_in_sha256(new_password)
         user.password = encrypted_password
         self.db_session.commit()
+        return user
+
+    def authenticate_user(
+        self, password: str, id: Optional[int] = None, username: Optional[str] = None
+    ) -> Union[User, bool]:
+        """
+        Authenticate a user by their username and password.
+
+        Parameters
+        ----------
+        password : str
+            The plain-text password provided for authentication.
+        id : int, optional
+            The unique ID of the user to authenticate. Default is None.
+        username : str, optional
+            The username of the user to authenticate.
+
+        Returns
+        -------
+        Union[User, bool]
+            The `User` instance if authentication is successful, otherwise `False`.
+
+        Raises
+        ------
+        UserNotFoundError
+            If no user is found with the given ID or username.
+        InvalidPasswordError
+            If the provided password does not match the stored password.
+        ValueError
+            If both `id` and `username` are `None`.
+
+        Notes
+        -----
+        - The provided password is encrypted using SHA-256 for comparison.
+        """
+        user = self.get_user(user_id=id, username=username)
+        if not self._verify_password(password, user.password):
+            raise errors.InvalidPasswordError
+        return user
+
+    def _verify_password(self, plain_password: str, hashed_password: str) -> bool:
+        """
+        Verify a plain-text password against its hashed version.
+
+        Parameters
+        ----------
+        plain_password : str
+            The plain-text password to verify.
+        hashed_password : str
+            The hashed password to compare against.
+
+        Returns
+        -------
+        bool
+            `True` if the passwords match, otherwise `False`.
+
+        Notes
+        -----
+        - This method uses SHA-256 hashing for verification.
+        """
+        return hash_in_sha256(plain_password) == hashed_password
+
+    def create_access_token(self, user: User) -> str:
+        """
+        Create a JWT access token for the given user.
+
+        Parameters
+        ----------
+        user : User
+            The user for whom the access token is to be created.
+
+        Returns
+        -------
+        str
+            The generated JWT access token as a string.
+
+        Raises
+        ------
+        ValueError
+            If the JWT configuration is not set for the UserService.
+        """
+
+        if self.jwt_config is None:
+            raise ValueError("JWT configuration is not set for UserService.")
+        data = {"sub": user.username}
+        if self.jwt_config.access_token_expire_minutes:
+            expires_delta = datetime.timedelta(minutes=self.jwt_config.access_token_expire_minutes)
+            data.update({"exp": datetime.datetime.now(datetime.timezone.utc) + expires_delta})
+        token = jwt.encode(
+            data, self.jwt_config.secret_key, algorithm=self.jwt_config.algorithm.value
+        )
+        return token
+
+    def authorize_user(self, token: str) -> User:
+        """
+        Authorize a user based on the provided JWT token.
+
+        Parameters
+        ----------
+        token : str
+            The JWT token to decode and verify.
+
+        Returns
+        -------
+        User
+            The authorized `User` instance.
+
+        Raises
+        ------
+        ValueError
+            If the JWT configuration is not set for the UserService.
+        InvalidCredentialsError
+            If the token is invalid.
+        """
+
+        if self.jwt_config is None:
+            raise ValueError("JWT configuration is not set for UserService.")
+        try:
+            payload = jwt.decode(
+                token, self.jwt_config.secret_key, algorithms=[self.jwt_config.algorithm.value]
+            )
+            username: str = payload.get("sub")
+            if username is None:
+                raise errors.InvalidCredentialsError
+            user = self.get_user(username=username)
+        except (jwt.InvalidTokenError, errors.UserNotFoundError) as e:
+            raise errors.InvalidCredentialsError from e
         return user

@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
 
 from docuisine.db.models import Ingredient
-from docuisine.dependencies import Ingredient_Service
+from docuisine.dependencies import AuthenticatedUser, Ingredient_Service
 from docuisine.schemas.common import Detail
+from docuisine.schemas.enums import Role
 from docuisine.schemas.ingredient import IngredientCreate, IngredientOut, IngredientUpdate
 from docuisine.utils import errors
 
@@ -11,7 +12,11 @@ router = APIRouter(prefix="/ingredients", tags=["Ingredients"])
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[IngredientOut])
 async def get_ingredients(ingredient_service: Ingredient_Service) -> list[IngredientOut]:
-    """Get all ingredients."""
+    """
+    Get all ingredients.
+
+    Access Level: Public
+    """
     ingredients: list[Ingredient] = ingredient_service.get_all_ingredients()
     return [IngredientOut.model_validate(ingredient) for ingredient in ingredients]
 
@@ -25,7 +30,11 @@ async def get_ingredients(ingredient_service: Ingredient_Service) -> list[Ingred
 async def get_ingredient(
     ingredient_id: int, ingredient_service: Ingredient_Service
 ) -> IngredientOut:
-    """Get an ingredient by ID."""
+    """
+    Get an ingredient by ID.
+
+    Access Level: Public
+    """
     try:
         ingredient: Ingredient = ingredient_service.get_ingredient(ingredient_id=ingredient_id)
         return IngredientOut.model_validate(ingredient)
@@ -43,9 +52,17 @@ async def get_ingredient(
     responses={status.HTTP_409_CONFLICT: {"model": Detail}},
 )
 async def create_ingredient(
-    ingredient: IngredientCreate, ingredient_service: Ingredient_Service
+    ingredient: IngredientCreate,
+    ingredient_service: Ingredient_Service,
+    authenticated_user: AuthenticatedUser,
 ) -> IngredientOut:
-    """Create a new ingredient."""
+    """
+    Create a new ingredient.
+
+    Access Level: Admin, User
+    """
+    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
+        raise errors.ForbiddenAccessError
     try:
         new_ingredient: Ingredient = ingredient_service.create_ingredient(
             name=ingredient.name,
@@ -70,9 +87,18 @@ async def create_ingredient(
     },
 )
 async def update_ingredient(
-    ingredient_id: int, ingredient: IngredientUpdate, ingredient_service: Ingredient_Service
+    ingredient_id: int,
+    ingredient: IngredientUpdate,
+    ingredient_service: Ingredient_Service,
+    authenticated_user: AuthenticatedUser,
 ) -> IngredientOut:
-    """Update an ingredient by ID."""
+    """
+    Update an ingredient by ID.
+
+    Access Level: Admin, User
+    """
+    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
+        raise errors.ForbiddenAccessError
     try:
         updated_ingredient: Ingredient = ingredient_service.update_ingredient(
             ingredient_id=ingredient_id,
@@ -99,8 +125,18 @@ async def update_ingredient(
     response_model=Detail,
     responses={status.HTTP_404_NOT_FOUND: {"model": Detail}},
 )
-async def delete_ingredient(ingredient_id: int, ingredient_service: Ingredient_Service) -> Detail:
-    """Delete an ingredient by ID."""
+async def delete_ingredient(
+    ingredient_id: int,
+    ingredient_service: Ingredient_Service,
+    authenticated_user: AuthenticatedUser,
+) -> Detail:
+    """
+    Delete an ingredient by ID.
+
+    Access Level: Admin, User
+    """
+    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
+        raise errors.ForbiddenAccessError
     try:
         ingredient_service.delete_ingredient(ingredient_id=ingredient_id)
         return Detail(detail=f"Ingredient with ID {ingredient_id} has been deleted.")

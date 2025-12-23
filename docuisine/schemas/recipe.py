@@ -4,7 +4,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class RecipeCreate(BaseModel):
-    user_id: int = Field(..., description="ID of the user creating the recipe", examples=[1])
     name: str = Field(..., description="Recipe name", examples=["Chocolate Cake"])
     cook_time_sec: Optional[int] = Field(
         None, description="Cooking time in seconds", examples=[3600]

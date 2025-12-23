@@ -40,6 +40,7 @@ jobs:
       env:
         DATABASE_URL: "sqlite:///:memory:"
         MODE: "testing"
+        JWT_SECRET_KEY: 4e9db3a3f86d82cb45f552b9e24e7a652fbb5d3565a3f60a798f904cee6b235b
       run: |
         source .venv/bin/activate
         uv run pytest tests

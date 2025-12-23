@@ -31,6 +31,10 @@ dev:
 dev-down:
 	docker compose -f scripts/dev/docker-compose.yml down
 
+.PHONY: del-dev-db
+del-dev-db:
+	docker compose -f scripts/dev/docker-compose.yml down -v
+
 ## Run production server
 .PHONY: prod
 prod:
@@ -72,6 +76,14 @@ patch:
 	@git add pyproject.toml
 	@git add uv.lock
 	@git commit -m "chore: bump patch version to $$(uv version --short)"
+
+## Bump project version with minor update
+.PHONY: minor
+minor:
+	@uv version --bump minor
+	@git add pyproject.toml
+	@git add uv.lock
+	@git commit -m "chore: bump minor version to $$(uv version --short)"
 
 
 ## Set up Python interpreter environment

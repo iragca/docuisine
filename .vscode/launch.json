@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python Debugger: FastAPI",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["docuisine.main:app", "--reload", "--port", "7000", "--host", "localhost"],
+      "jinja": true,
+        "env": {
+            "MODE": "development",
+            "DATABASE_URL": "postgresql+psycopg2://user:password@localhost:5432/docuisine",
+            "JWT_SECRET_KEY": "4e9db3a3f86d82cb45f552b9e24e7a652fbb5d3565a3f60a798f904cee6b235b",
+            "JWT_ALGORITHM": "HS256",
+            "JWT_EXPIRATION_MINUTES": "525600"
+        }
+    }
+  ]
+}

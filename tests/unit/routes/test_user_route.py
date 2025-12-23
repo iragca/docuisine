@@ -9,274 +9,287 @@ from docuisine.main import app
 from docuisine.utils import errors
 
 
-def test_get_users():
-    ## Setup
-    def mock_user_service():
-        mock = MagicMock()
-        mock_users = [
-            User(id=1, username="user1", password="Password!hashed1"),
-            User(id=2, username="user2", password="Password!hashed2"),
-        ]
-        mock.get_all_users.return_value = mock_users
-
-        return mock
-
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
-
-    ## Test
-    response = client.get("/users/")
-    assert response.status_code == status.HTTP_200_OK, response.text
-    data = response.json()
-    assert len(data) == 2
-    assert data[0]["username"] == "user1"
-    assert data[1]["username"] == "user2"
-    assert data[0]["email"] is None
-    assert data[1]["email"] is None
-    assert "id" in data[0]
-    assert "id" in data[1]
-
-    assert all("password" not in user for user in data)  # Ensure passwords are not exposed
-    assert all("email" in user for user in data)  # Ensure email field is present
+class TestPublic:
 
 
-def test_get_user_not_found():
-    def mock_user_service():
-        mock = MagicMock()
-        mock.get_user.side_effect = errors.UserNotFoundError(user_id=999)
-        return mock
+    def test_get_users(self):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock_users = [
+                User(id=1, username="user1", password="Password!hashed1"),
+                User(id=2, username="user2", password="Password!hashed2"),
+            ]
+            mock.get_all_users.return_value = mock_users
 
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
+            return mock
 
-    response = client.get("/users/999")
-    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
-    data = response.json()
-    assert data["detail"] == "User with ID 999 not found."
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app)
 
+        ## Test
+        response = client.get("/users/")
+        assert response.status_code == status.HTTP_200_OK, response.text
+        data = response.json()
+        assert len(data) == 2
+        assert data[0]["username"] == "user1"
+        assert data[1]["username"] == "user2"
+        assert data[0]["email"] is None
+        assert data[1]["email"] is None
+        assert "id" in data[0]
+        assert "id" in data[1]
 
-def test_create_user_conflict():
-    ## Setup
-    def mock_user_service():
-        mock = MagicMock()
-        mock.create_user.side_effect = errors.UserExistsError(username="user1")
-        return mock
-
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
-
-    ## Test
-    user_data = {
-        "username": "user1",
-        "password": "SomePassword!23",
-    }
-    response = client.post("/users/", json=user_data)
-    assert response.status_code == status.HTTP_409_CONFLICT, response.text
-    data = response.json()
-    assert data["detail"] == "User with username 'user1' already exists."
+        assert all("password" not in user for user in data)  # Ensure passwords are not exposed
+        assert all("email" in user for user in data)  # Ensure email field is present
 
 
-def test_create_user_success():
-    ## Setup
-    def mock_user_service():
-        mock = MagicMock()
-        mock.create_user.return_value = User(
-            id=1, username="newuser", password="HashedPassword!23"
+    def test_get_user_not_found(self):
+        def mock_user_service():
+            mock = MagicMock()
+            mock.get_user.side_effect = errors.UserNotFoundError(user_id=999)
+            return mock
+
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app)
+
+        response = client.get("/users/999")
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+        data = response.json()
+        assert data["detail"] == "User with ID 999 not found."
+
+
+    def test_create_user_conflict(self):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock.create_user.side_effect = errors.UserExistsError(username="user1")
+            return mock
+
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app)
+
+        ## Test
+        user_data = {
+            "username": "user1",
+            "password": "SomePassword!23",
+        }
+        response = client.post("/users/", json=user_data)
+        assert response.status_code == status.HTTP_409_CONFLICT, response.text
+        data = response.json()
+        assert data["detail"] == "User with username 'user1' already exists."
+
+
+    def test_create_user_success(self):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock.create_user.return_value = User(
+                id=1, username="newuser", password="HashedPassword!23"
+            )
+            return mock
+
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app)
+
+        ## Test
+        user_data = {
+            "username": "newuser",
+            "password": "SomePassword!23",
+        }
+        response = client.post("/users/", json=user_data)
+        assert response.status_code == status.HTTP_201_CREATED, response.text
+        data = response.json()
+        assert data["username"] == "newuser"
+        assert data["id"] == 1
+        assert data["email"] is None
+        assert "password" not in data  # Ensure password is not exposed
+
+
+    def test_create_user_with_email_success(self):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock.create_user.return_value = User(
+                id=1, username="newuser", password="HashedPassword!23", email="newuser@example.com"
+            )
+            return mock
+
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app)
+
+        ## Test
+        user_data = {
+            "username": "newuser",
+            "password": "SomePassword!23",
+            "email": "newuser@example.com",
+        }
+        response = client.post("/users/", json=user_data)
+        assert response.status_code == status.HTTP_201_CREATED, response.text
+        data = response.json()
+        assert data["username"] == "newuser"
+        assert data["id"] == 1
+        assert data["email"] == "newuser@example.com"
+        assert "password" not in data  # Ensure password is not exposed
+
+class TestRegularUser:
+
+    def test_delete_user(self, app_regular_user: MagicMock):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock.delete_user.return_value = None
+            return mock
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app_regular_user)
+        
+        ## Test
+        response = client.delete("/users/1")
+        assert response.status_code == status.HTTP_200_OK, response.text
+        data = response.json()
+        assert data["detail"] == "User with ID 1 has been deleted."
+
+    def test_delete_user_not_found(self, app_regular_user: MagicMock):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock.delete_user.side_effect = errors.UserNotFoundError(user_id=1)
+            return mock
+
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app_regular_user)
+
+        ## Test
+        response = client.delete("/users/1")
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+        data = response.json()
+        assert data["detail"] == "User with ID 1 not found."
+
+
+    def test_update_user_password_not_found(self, app_regular_user: MagicMock):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock.update_user_password.side_effect = errors.UserNotFoundError(user_id=1)
+            return mock
+
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app_regular_user)
+
+        ## Test
+        password_data = {
+            "id": 1,
+            "old_password": "hashed::DevPassword1P!",
+            "new_password": "NewSecurePassword!45",
+        }
+        response = client.put("/users/password", json=password_data)
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+        data = response.json()
+        assert data["detail"] == "User with ID 1 not found."
+
+
+    def test_update_user_password_success(self):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock.update_user_password.return_value = User(
+                id=1, username="existinguser", password="NewSecurePassword!45"
+            )
+            return mock
+
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app)
+
+        ## Test
+        password_data = {
+            "id": 1,
+            "old_password": "OldPassword!23",
+            "new_password": "NewSecurePassword!45",
+        }
+        response = client.put("/users/password", json=password_data)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        data = response.json()
+        assert data["username"] == "existinguser"
+        assert data["id"] == 1
+        assert "password" not in data  # Ensure password is not exposed
+
+
+    def test_update_user_password_invalid(self):
+        ## Setup
+        client = TestClient(app)
+
+        ## Test
+        password_data = {
+            "id": 1,
+            "old_password": "OldPassword!23",
+            "new_password": "short",
+        }
+        response = client.put("/users/password", json=password_data)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+        data = response.json()
+        assert data["detail"][0]["msg"] == "String should have at least 8 characters"
+
+
+
+    def test_update_user_email_not_found(self, app_regular_user: MagicMock):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock.update_user_email.side_effect = errors.UserNotFoundError(user_id=1)
+            return mock
+
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app_regular_user)
+
+        ## Test
+        email_data = {"id": 1, "password": "CurrentPassword!23", "email": "newemail@example.com"}
+        response = client.put("/users/email", json=email_data)
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
+        data = response.json()
+        assert data["detail"] == "User with ID 1 not found."
+
+
+    def test_update_user_email_conflict(self):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock.update_user_email.side_effect = errors.DuplicateEmailError(
+                email="newemail@example.com"
+            )
+            return mock
+
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app)
+
+        ## Test
+        email_data = {"id": 1, "password": "CurrentPassword!23", "email": "newemail@example.com"}
+        response = client.put("/users/email", json=email_data)
+        assert response.status_code == status.HTTP_409_CONFLICT, response.text
+        data = response.json()
+        assert (
+            data["detail"] == "Email 'newemail@example.com' is already associated with another user."
         )
-        return mock
-
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
-
-    ## Test
-    user_data = {
-        "username": "newuser",
-        "password": "SomePassword!23",
-    }
-    response = client.post("/users/", json=user_data)
-    assert response.status_code == status.HTTP_201_CREATED, response.text
-    data = response.json()
-    assert data["username"] == "newuser"
-    assert data["id"] == 1
-    assert data["email"] is None
-    assert "password" not in data  # Ensure password is not exposed
 
 
-def test_create_user_with_email_success():
-    ## Setup
-    def mock_user_service():
-        mock = MagicMock()
-        mock.create_user.return_value = User(
-            id=1, username="newuser", password="HashedPassword!23", email="newuser@example.com"
-        )
-        return mock
+    def test_update_user_email_success(self):
+        ## Setup
+        def mock_user_service():
+            mock = MagicMock()
+            mock.update_user_email.return_value = User(
+                id=1, username="existinguser", password="Password!23", email="newemail@example.com"
+            )
+            return mock
 
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
+        app.dependency_overrides[get_user_service] = mock_user_service
+        client = TestClient(app)
 
-    ## Test
-    user_data = {
-        "username": "newuser",
-        "password": "SomePassword!23",
-        "email": "newuser@example.com",
-    }
-    response = client.post("/users/", json=user_data)
-    assert response.status_code == status.HTTP_201_CREATED, response.text
-    data = response.json()
-    assert data["username"] == "newuser"
-    assert data["id"] == 1
-    assert data["email"] == "newuser@example.com"
-    assert "password" not in data  # Ensure password is not exposed
+        ## Test
+        email_data = {"id": 1, "password": "CurrentPassword!23", "email": "newemail@example.com"}
 
+        response = client.put("/users/email", json=email_data)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        data = response.json()
+        assert data["username"] == "existinguser"
+        assert data["id"] == 1
+        assert data["email"] == "newemail@example.com"
+        assert "password" not in data  # Ensure password is not exposed
 
-def test_delete_user(client):
-    ## Test
-    response = client.delete("/users/1")
-    assert response.status_code == status.HTTP_200_OK, response.text
-    data = response.json()
-    assert data["detail"] == "User with ID 1 has been deleted."
-
-
-def test_delete_user_not_found():
-    ## Setup
-    def mock_user_service():
-        mock = MagicMock()
-        mock.delete_user.side_effect = errors.UserNotFoundError(user_id=999)
-        return mock
-
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
-
-    ## Test
-    response = client.delete("/users/999")
-    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
-    data = response.json()
-    assert data["detail"] == "User with ID 999 not found."
-
-
-def test_update_user_password_not_found():
-    ## Setup
-    def mock_user_service():
-        mock = MagicMock()
-        mock.update_user_password.side_effect = errors.UserNotFoundError(user_id=999)
-        return mock
-
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
-
-    ## Test
-    password_data = {
-        "id": 999,
-        "old_password": "OldPassword!23",
-        "new_password": "NewSecurePassword!45",
-    }
-    response = client.put("/users/password", json=password_data)
-    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
-    data = response.json()
-    assert data["detail"] == "User with ID 999 not found."
-
-
-def test_update_user_password_success():
-    ## Setup
-    def mock_user_service():
-        mock = MagicMock()
-        mock.update_user_password.return_value = User(
-            id=1, username="existinguser", password="NewSecurePassword!45"
-        )
-        return mock
-
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
-
-    ## Test
-    password_data = {
-        "id": 1,
-        "old_password": "OldPassword!23",
-        "new_password": "NewSecurePassword!45",
-    }
-    response = client.put("/users/password", json=password_data)
-    assert response.status_code == status.HTTP_200_OK, response.text
-    data = response.json()
-    assert data["username"] == "existinguser"
-    assert data["id"] == 1
-    assert "password" not in data  # Ensure password is not exposed
-
-
-def test_update_user_password_invalid():
-    ## Setup
-    client = TestClient(app)
-
-    ## Test
-    password_data = {
-        "id": 1,
-        "old_password": "OldPassword!23",
-        "new_password": "short",
-    }
-    response = client.put("/users/password", json=password_data)
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-    data = response.json()
-    assert data["detail"][0]["msg"] == "String should have at least 8 characters"
-
-
-def test_update_user_email_not_found():
-    ## Setup
-    def mock_user_service():
-        mock = MagicMock()
-        mock.update_user_email.side_effect = errors.UserNotFoundError(user_id=999)
-        return mock
-
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
-
-    ## Test
-    email_data = {"id": 999, "password": "CurrentPassword!23", "email": "newemail@example.com"}
-    response = client.put("/users/email", json=email_data)
-    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
-    data = response.json()
-    assert data["detail"] == "User with ID 999 not found."
-
-
-def test_update_user_email_conflict():
-    ## Setup
-    def mock_user_service():
-        mock = MagicMock()
-        mock.update_user_email.side_effect = errors.DuplicateEmailError(
-            email="newemail@example.com"
-        )
-        return mock
-
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
-
-    ## Test
-    email_data = {"id": 1, "password": "CurrentPassword!23", "email": "newemail@example.com"}
-    response = client.put("/users/email", json=email_data)
-    assert response.status_code == status.HTTP_409_CONFLICT, response.text
-    data = response.json()
-    assert (
-        data["detail"] == "Email 'newemail@example.com' is already associated with another user."
-    )
-
-
-def test_update_user_email_success():
-    ## Setup
-    def mock_user_service():
-        mock = MagicMock()
-        mock.update_user_email.return_value = User(
-            id=1, username="existinguser", password="Password!23", email="newemail@example.com"
-        )
-        return mock
-
-    app.dependency_overrides[get_user_service] = mock_user_service
-    client = TestClient(app)
-
-    ## Test
-    email_data = {"id": 1, "password": "CurrentPassword!23", "email": "newemail@example.com"}
-
-    response = client.put("/users/email", json=email_data)
-    assert response.status_code == status.HTTP_200_OK, response.text
-    data = response.json()
-    assert data["username"] == "existinguser"
-    assert data["id"] == 1
-    assert data["email"] == "newemail@example.com"
-    assert "password" not in data  # Ensure password is not exposed

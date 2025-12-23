@@ -5,8 +5,10 @@ BEGIN;
 -- =====================
 INSERT INTO users (id, username, email, password, role, preview_img, img)
 VALUES
-    (1, 'alice', 'alice@example.com', 'hashed_password_1P!', 'user', NULL, NULL),
-    (2, 'bob', 'bob@example.com', 'hashed_password_2P!', 'admin', NULL, NULL);
+    -- password: DevPassword1P!
+    (1, 'dev-user', 'dev-user@docuisine.org', '1920b94cd7cee322eaa299e703301f6a446c5ffe8da65e09b110880c9a02747e', 'user', NULL, NULL),
+    -- password: DevPassword2P!
+    (2, 'dev-admin', 'dev-admin@docuisine.org', '752b50d7be2843f1f3b2f6879e5c4fc235c32109781c21fdc938d1f1ce2b17be', 'admin', NULL, NULL);
 
 -- =====================
 -- INGREDIENTS
@@ -122,3 +124,25 @@ VALUES
     (2, 5, 60);  -- Eggs
 
 COMMIT;
+
+
+-- Reset sequences to match current data
+SELECT setval(pg_get_serial_sequence('users', 'id'),
+              (SELECT MAX(id) FROM users),
+              true);
+
+SELECT setval(pg_get_serial_sequence('ingredients', 'id'),
+              (SELECT MAX(id) FROM ingredients),
+              true);
+
+SELECT setval(pg_get_serial_sequence('categories', 'id'),
+              (SELECT MAX(id) FROM categories),
+              true);
+
+SELECT setval(pg_get_serial_sequence('recipes', 'id'),
+              (SELECT MAX(id) FROM recipes),
+              true);
+
+SELECT setval(pg_get_serial_sequence('stores', 'id'),
+              (SELECT MAX(id) FROM stores),
+              true);
