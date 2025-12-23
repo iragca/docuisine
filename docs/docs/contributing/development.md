@@ -70,7 +70,14 @@ docker build \
 Then push to Docker Hub
 
 ```bash
-docker push iragca/docuisine --all-tags
+docker push iragca/docuisine:backend-$(uv version --short)
+docker push iragca/docuisine:backend
+```
+
+Optionally remove them after pushing.
+
+```bash
+docker image rm iragca/docuisine:backend-$(uv version --short) iragca/docuisine:backend
 ```
 
 or build and run using `docker compose`:
