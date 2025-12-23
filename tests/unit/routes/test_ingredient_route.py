@@ -224,7 +224,7 @@ class TestAdminUser:
             mock.update_ingredient.side_effect = errors.IngredientNotFoundError(ingredient_id=999)
             return mock
 
-        app.dependency_overrides[get_ingredient_service] = mock_ingredient_service
+        app_admin.dependency_overrides[get_ingredient_service] = mock_ingredient_service
         client = TestClient(app_admin)
 
         update_data = {"name": "New Name"}
@@ -241,7 +241,7 @@ class TestAdminUser:
             mock.update_ingredient.side_effect = errors.IngredientExistsError(name="Existing")
             return mock
 
-        app.dependency_overrides[get_ingredient_service] = mock_ingredient_service
+        app_admin.dependency_overrides[get_ingredient_service] = mock_ingredient_service
         client = TestClient(app_admin)
 
         update_data = {"name": "Existing"}
@@ -258,7 +258,7 @@ class TestAdminUser:
             mock.delete_ingredient.return_value = None
             return mock
 
-        app.dependency_overrides[get_ingredient_service] = mock_ingredient_service
+        app_admin.dependency_overrides[get_ingredient_service] = mock_ingredient_service
         client = TestClient(app_admin)
 
         response = client.delete("/ingredients/1")
@@ -274,7 +274,7 @@ class TestAdminUser:
             mock.delete_ingredient.side_effect = errors.IngredientNotFoundError(ingredient_id=999)
             return mock
 
-        app.dependency_overrides[get_ingredient_service] = mock_ingredient_service
+        app_admin.dependency_overrides[get_ingredient_service] = mock_ingredient_service
         client = TestClient(app_admin)
 
         response = client.delete("/ingredients/999")
