@@ -47,34 +47,48 @@ def db_session():
 
 
 @pytest.fixture
-def app_regular_user():
+def regular_user():
+    """
+    Provide a regular user instance for testing.
+    Used in unit tests for services and routes that require a regular user.
+    """
+    mock_user = MagicMock(spec=User)
+    mock_user.id = 1
+    mock_user.username = "dev-user"
+    mock_user.password = "hashed::DevPassword1P!"
+    mock_user.email = "dev-user@docuisine.org"
+    mock_user.role = "user"
+    return mock_user
+
+@pytest.fixture
+def app_regular_user(regular_user):
     """
     Provide a TestClient with a regular authenticated user.
     Used in unit tests for routes that require an authenticated regular user.
     """
-    user = User(
-        id=1,
-        username="dev-user",
-        password="hashed::DevPassword1P!",
-        email="dev-user@docuisine.org",
-        role="user",
-    )
-    app.dependency_overrides[get_client_user] = lambda: user
+    app.dependency_overrides[get_client_user] = lambda: regular_user
     return app
 
 
 @pytest.fixture
-def app_admin():
+def admin_user():
+    """
+    Provide an admin user instance for testing.
+    Used in unit tests for services and routes that require an admin user.
+    """
+    mock_user = MagicMock(spec=User)
+    mock_user.id = 2
+    mock_user.username = "dev-admin"
+    mock_user.password = "hashed::DevPassword2P!"
+    mock_user.email = "dev-admin@docuisine.org"
+    mock_user.role = "admin"
+    return mock_user
+
+@pytest.fixture
+def app_admin(admin_user):
     """
     Provide a TestClient with an admin authenticated user.
     Used in unit tests for routes that require an authenticated admin user.
     """
-    user = User(
-        id=2,
-        username="dev-admin",
-        password="hashed::DevPassword2P!",
-        email="dev-admin@docuisine.org",
-        role="admin",
-    )
-    app.dependency_overrides[get_client_user] = lambda: user
+    app.dependency_overrides[get_client_user] = lambda: admin_user
     return app
