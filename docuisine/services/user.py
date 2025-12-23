@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -245,4 +245,40 @@ class UserService:
         encrypted_password = hash_in_sha256(new_password)
         user.password = encrypted_password
         self.db_session.commit()
+        return user
+
+    def authenticate_user(
+        self, password: str, id: Optional[int] = None, username: Optional[str] = None
+    ) -> Union[User, bool]:
+        """
+        Authenticate a user by their username and password.
+
+        Parameters
+        ----------
+        password : str
+            The plain-text password provided for authentication.
+        id : int, optional
+            The unique ID of the user to authenticate. Default is None.
+        username : str, optional
+            The username of the user to authenticate.
+
+        Returns
+        -------
+        Union[User, bool]
+            The `User` instance if authentication is successful, otherwise `False`.
+
+        Notes
+        -----
+        - The provided password is encrypted using SHA-256 for comparison.
+        """
+        hash_password = hash_in_sha256(password)
+
+        try:
+            user = self.get_user(user_id=id, username=username)
+        except UserNotFoundError:
+            return False
+
+        if user.password != hash_password:
+            return False
+
         return user

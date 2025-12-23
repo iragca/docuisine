@@ -221,3 +221,36 @@ def test_update_user_duplicate_email_raises(db_session: MagicMock):
     db_session.commit.assert_called_once()
     db_session.rollback.assert_called_once()
     assert "example@mail.com" in str(exc.value)
+
+
+
+def test_authenticate_user_success(db_session: MagicMock):
+    """Test that authenticating a user with correct credentials works correctly."""
+    user = User(id=1, username="alice", password="hashed::password123")
+    db_session.first.return_value = user
+
+    service = UserService(db_session)
+    result = service.authenticate_user(username="alice", password="password123")
+
+    assert result is user
+
+
+def test_authenticate_user_wrong_password(db_session: MagicMock):
+    """Test that authenticating a user with incorrect password returns False."""
+    user = User(id=1, username="alice", password="hashed::password123")
+    db_session.first.return_value = user
+
+    service = UserService(db_session)
+    result = service.authenticate_user(username="alice", password="wrongpassword")
+
+    assert result is False
+
+
+def test_authenticate_user_not_found(db_session: MagicMock):
+    """Test that authenticating a non-existent user returns False."""
+    db_session.first.return_value = None
+
+    service = UserService(db_session)
+    result = service.authenticate_user(username="nonexistent", password="password123")
+
+    assert result is False
