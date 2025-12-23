@@ -9,7 +9,6 @@ from .services import (
 )
 
 __all__ = [
-    "AuthorizedUser",
     "AuthenticatedUser",
     "AuthForm",
     "AuthToken",
