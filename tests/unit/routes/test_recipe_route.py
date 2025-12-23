@@ -111,7 +111,7 @@ class TestPublic:
         assert data["detail"] == "Recipe with ID 999 not found."
 
 
-class TestRegularUser:
+class TestAdminUser:
     def test_create_recipe_success(self, app_admin: MagicMock):
         """Test creating a new recipe successfully."""
 
