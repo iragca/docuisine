@@ -239,8 +239,7 @@ class UserService:
         user = self._get_user_by_id(user_id)
         if user is None:
             raise UserNotFoundError(user_id=user_id)
-        old_password_encrypted = hash_in_sha256(old_password)
-        if user.password != old_password_encrypted:
+        if not self._verify_password(old_password, user.password):
             raise InvalidPasswordError("Old password does not match.")
         encrypted_password = hash_in_sha256(new_password)
         user.password = encrypted_password

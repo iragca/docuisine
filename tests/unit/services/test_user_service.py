@@ -224,10 +224,14 @@ def test_update_user_duplicate_email_raises(db_session: MagicMock):
 
 
 
-def test_authenticate_user_success(db_session: MagicMock):
+def test_authenticate_user_success(db_session: MagicMock, monkeypatch):
     """Test that authenticating a user with correct credentials works correctly."""
     user = User(id=1, username="alice", password="hashed::password123")
     db_session.first.return_value = user
+    monkeypatch.setattr(
+        "docuisine.services.user.UserService._verify_password",
+        lambda self, plain_password, hashed_password: True,
+    )
 
     service = UserService(db_session)
     result = service.authenticate_user(username="alice", password="password123")
@@ -235,10 +239,14 @@ def test_authenticate_user_success(db_session: MagicMock):
     assert result is user
 
 
-def test_authenticate_user_wrong_password(db_session: MagicMock):
+def test_authenticate_user_wrong_password(db_session: MagicMock, monkeypatch):
     """Test that authenticating a user with incorrect password returns False."""
     user = User(id=1, username="alice", password="hashed::password123")
     db_session.first.return_value = user
+    monkeypatch.setattr(
+        "docuisine.services.user.UserService._verify_password",
+        lambda self, plain_password, hashed_password: False,
+    )
 
     service = UserService(db_session)
     result = service.authenticate_user(username="alice", password="wrongpassword")
@@ -256,9 +264,13 @@ def test_authenticate_user_not_found(db_session: MagicMock):
     assert result is False
 
 
-def test_verify_password(db_session: MagicMock):
+def test_verify_password(db_session: MagicMock, monkeypatch):
     """Test that the password verification method works correctly."""
     service = UserService(db_session)
+    monkeypatch.setattr(
+        "docuisine.services.user.UserService._verify_password",
+        lambda self, plain_password, hashed_password: f"hashed::{plain_password}" == hashed_password,
+    )
 
     assert service._verify_password("password123", "hashed::password123") is True
     assert service._verify_password("wrongpassword", "hashed::password123") is False
