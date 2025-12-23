@@ -207,8 +207,8 @@ class TestAdminUser:
             )
             return mock
 
-        app.dependency_overrides[get_ingredient_service] = mock_ingredient_service
-        client = TestClient(app)
+        app_admin.dependency_overrides[get_ingredient_service] = mock_ingredient_service
+        client = TestClient(app_admin)
 
         update_data = {"recipe_id": 10}
         response = client.put("/ingredients/1", json=update_data)
