@@ -27,4 +27,4 @@ async def get_current_user_token(token: AuthToken, user_service: User_Service):
     return user
 
 
-AuthorizedUser = Annotated[User, Depends(get_current_user_token)]
+AuthenticatedUser = Annotated[User, Depends(get_current_user_token)]

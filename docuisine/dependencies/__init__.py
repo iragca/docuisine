@@ -1,4 +1,4 @@
-from .auth import AuthForm, AuthorizedUser, AuthToken
+from .auth import AuthForm, AuthenticatedUser, AuthToken
 from .db import DB_Session
 from .services import (
     Category_Service,
