@@ -39,15 +39,15 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     volumes:
-      - minio-data:/data
+      - docuisine_minio_data:/data
     command: server /data --console-address ":9001"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 10s
-      - docuisine_minio_data:/data
-    command: server /data --console-address ":9001"
-    restart: unless-stopped
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   docuisine_db_data:
