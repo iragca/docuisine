@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from docuisine.schemas.annotations import Password, Username
+from docuisine.schemas.common import Default, Entity
 
 
 class UserCreate(BaseModel):
@@ -40,7 +41,17 @@ class UserRead(BaseModel):
     id: int = Field(..., description="The user's unique identifier", examples=[1])
 
 
-class UserOut(BaseModel):
+class UserUpdate(Entity):
+    id: int = Field(..., description="The user's unique identifier", examples=[1])
+    username: Optional[Username] = Field(
+        None, description="The user's username", examples=["user123"]
+    )
+    email: Optional[EmailStr] = Field(
+        None, description="The user's email address", examples=["user@example.com"]
+    )
+
+
+class UserOut(Entity, Default):
     id: int = Field(..., description="The user's unique identifier", examples=[1])
     username: Optional[Username] = Field(
         None, description="The user's username", examples=["user123"]

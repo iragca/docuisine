@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -9,3 +12,35 @@ class Detail(BaseModel):
     """
 
     detail: str
+
+
+class Default(BaseModel):
+    """
+    Default schema with common attributes.
+
+    Attributes
+    ----------
+    created_at : datetime
+        Timestamp when the record was created.
+    updated_at : datetime
+        Timestamp when the record was last updated.
+    """
+
+    created_at: datetime
+    updated_at: datetime
+
+
+class Entity(BaseModel):
+    """
+    Base schema for entities with an ID.
+
+    Attributes
+    ----------
+    img : Optional[str]
+        URL or path to the main image.
+    preview_img : Optional[str]
+        URL or path to the preview image.
+    """
+
+    img: Optional[str]
+    preview_img: Optional[str]
