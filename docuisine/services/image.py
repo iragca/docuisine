@@ -65,7 +65,7 @@ class ImageService:
             Fileobj=preview_buffer,
             ExtraArgs={"ContentType": f"image/{format}"},
         )
-        return ImageSet(ORIGINAL=original_image_name, PREVIEW=preview_image_name)
+        return ImageSet(original=original_image_name, preview=preview_image_name)
 
     @staticmethod
     def _build_image_name(image_bytes: bytes, format: str) -> str:
