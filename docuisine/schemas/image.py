@@ -28,5 +28,5 @@ class ImageSet(BaseModel):
     Represents a set of images including the original and its preview.
     """
 
-    ORIGINAL: str = Field(..., description="Original image", examples=["123940712123.jpg"])
-    PREVIEW: str = Field(..., description="Preview image", examples=["1412312341234.jpg"])
+    original: str = Field(..., description="Original image", examples=["123940712123.jpg"])
+    preview: str = Field(..., description="Preview image", examples=["1412312341234.jpg"])

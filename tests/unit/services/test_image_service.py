@@ -45,8 +45,8 @@ def test_upload_image(image_service: ImageService, monkeypatch, mock_s3_client: 
 
     image_bytes = b"fake-image-bytes"
     image_set: ImageSet = image_service.upload_image(image_bytes)
-    assert image_set.ORIGINAL == "newimage.jpeg"
-    assert image_set.PREVIEW == "newimage.jpeg"
+    assert image_set.original == "newimage.jpeg"
+    assert image_set.preview == "newimage.jpeg"
     mock_s3_client.upload_fileobj.called_count == 2
 
 
