@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import json
 
 from botocore.exceptions import ClientError
 from fastapi import FastAPI
@@ -7,6 +8,19 @@ from docuisine import routes
 from docuisine.db.database import engine
 from docuisine.db.models.base import Base
 from docuisine.db.storage import s3_config, s3_storage
+
+## Define S3 bucket policy to allow public read access to objects
+policy = {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": ["s3:GetObject"],
+            "Resource": ["arn:aws:s3:::docuisine-images/*"],
+        }
+    ],
+}
 
 
 @asynccontextmanager
@@ -20,6 +34,7 @@ async def on_startup(app: FastAPI):
             s3_storage.head_bucket(Bucket=s3_config.bucket_name)
         except ClientError:
             s3_storage.create_bucket(Bucket=s3_config.bucket_name)
+        s3_storage.put_bucket_policy(Bucket=s3_config.bucket_name, Policy=json.dumps(policy))
         yield
     finally:
         # Dispose of the database engine when the application shuts down
