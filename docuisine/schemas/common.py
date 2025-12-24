@@ -26,8 +26,8 @@ class Default(BaseModel):
         Timestamp when the record was last updated.
     """
 
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
 
 
 class Entity(BaseModel):
