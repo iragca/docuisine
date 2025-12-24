@@ -6,14 +6,10 @@ build-backend = "flit_core.buildapi"
 name = "docuisine"
 version = "0.1.0"
 description = "Backend for the Docuisine application."
-authors = [
-  { name = "Chris Irag", email = "iragca@pm.me"},
-]
+authors = [{ name = "Chris Irag", email = "iragca@pm.me" }]
 
 readme = "README.md"
-classifiers = [
-    "Programming Language :: Python :: 3",
-]
+classifiers = ["Programming Language :: Python :: 3"]
 
 dependencies = [
     "boto3>=1.42.16",
@@ -35,7 +31,7 @@ src = ["docuisine"]
 include = ["pyproject.toml", "docuisine/**/*.py"]
 
 [tool.ruff.lint]
-extend-select = ["I"]  # Add import sorting
+extend-select = ["I"] # Add import sorting
 
 [tool.ruff.lint.isort]
 known-first-party = ["docuisine"]
@@ -49,6 +45,7 @@ dev = [
     "neoteroi-mkdocs>=1.2.0",
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
+    "pytest-env>=1.2.0",
     "ruff>=0.14.9",
     "ty>=0.0.2",
     "zensical>=0.0.14",
@@ -56,3 +53,14 @@ dev = [
 
 [tool.pytest.ini_options]
 addopts = "--cov-config=.coveragerc --cov=docuisine tests/ --cov-report html"
+
+[tool.pytest_env]
+MODE = "development"
+DATABASE_URL = "postgresql+psycopg2://user:password@localhost:5432/docuisine"
+JWT_SECRET_KEY = "4e9db3a3f86d82cb45f552b9e24e7a652fbb5d3565a3f60a798f904cee6b235b"
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRATION_MINUTES = 525600
+S3_ENDPOINT_URL = "http://localhost:9000"
+S3_ACCESS_KEY = "minioadmin"
+S3_SECRET_KEY = "minioadmin"
+S3_BUCKET_NAME = "docuisine-test"
