@@ -49,6 +49,8 @@ theme:
     toggle:
       icon: material/weather-night
       name: Switch to light mode
+  logo: assets/branding/docuisine-no-base.png
+  favicon: assets/branding/favicon.ico
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
