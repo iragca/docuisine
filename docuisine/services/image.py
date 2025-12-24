@@ -1,7 +1,6 @@
 from functools import cached_property
 from hashlib import md5
 from io import BytesIO
-from urllib.parse import urljoin
 
 from botocore import client
 from PIL import Image, ImageFile
@@ -37,7 +36,7 @@ class ImageService:
         Returns
         -------
         str
-            The URL of the uploaded image.
+            The path of the uploaded image within the S3 bucket.
         """
         buffer = BytesIO(image)
         buffer.seek(0)
@@ -53,7 +52,7 @@ class ImageService:
             Fileobj=buffer,
             ExtraArgs={"ContentType": f"image/{format}"},
         )
-        return urljoin(urljoin(self.s3.meta.endpoint_url, self.s3.bucket_name), image_name)
+        return image_name
 
     @staticmethod
     def _build_image_name(image_bytes: bytes, format: str) -> str:

@@ -39,7 +39,8 @@ def test_upload_image(image_service: ImageService, monkeypatch, mock_s3_client: 
     mock_s3_client.bucket_name = "docuisine-images"
 
     image_bytes = b"fake-image-bytes"
-    image_service.upload_image(image_bytes)
+    image_name = image_service.upload_image(image_bytes)
+    assert image_name == "newimage.jpeg"
     mock_s3_client.upload_fileobj.assert_called_once()
 
 
