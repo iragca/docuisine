@@ -1,9 +1,8 @@
 services:
-
   db:
     hostname: ${POSTGRES_HOST:-localhost}
     image: postgres:18.1
-    container_name: docuisine_postgres
+    container_name: docuisine-postgres
     restart: always
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -30,6 +29,20 @@ services:
       timeout: 3s
       retries: 5
       start_period: 30s
+  minio:
+    image: minio/minio:latest
+    container_name: docuisine-minio
+    ports:
+      - "${MINIO_S3_PORT:-9000}:9000" # S3 API
+      - "${MINIO_CONSOLE_PORT:-9001}:9001" # Web Console
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
 
 volumes:
   docuisine_db_data:
+  minio-data:
