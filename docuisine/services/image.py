@@ -6,6 +6,7 @@ from botocore import client
 from PIL import Image, ImageFile
 
 from docuisine.schemas.enums import ImageFormat
+from docuisine.schemas.image import ImageSet
 from docuisine.utils.errors import UnsupportedImageFormatError
 
 
@@ -24,7 +25,7 @@ class ImageService:
         """
         self.s3 = s3
 
-    def upload_image(self, image: bytes) -> str:
+    def upload_image(self, image: bytes) -> ImageSet:
         """
         Upload an image to the S3 bucket.
 
@@ -35,24 +36,36 @@ class ImageService:
 
         Returns
         -------
-        str
-            The path of the uploaded image within the S3 bucket.
+        ImageSet
+            The set of uploaded images including original and preview.
         """
         buffer = BytesIO(image)
         buffer.seek(0)
 
         format = self._determine_format(buffer)
         self._validate_format(format)
-        image_name = self._build_image_name(image, format)
-        buffer.seek(0)
+        original_image_name = self._build_image_name(image, format)
+
+        preview_image = self._generate_image_preview(image)
+        preview_buffer = BytesIO(preview_image)
+        preview_buffer.seek(0)
+
+        preview_image_name = self._build_image_name(preview_image, format)
 
         self.s3.upload_fileobj(
             Bucket=self.s3.bucket_name,
-            Key=image_name,
+            Key=original_image_name,
             Fileobj=buffer,
             ExtraArgs={"ContentType": f"image/{format}"},
         )
-        return image_name
+
+        self.s3.upload_fileobj(
+            Bucket=self.s3.bucket_name,
+            Key=preview_image_name,
+            Fileobj=preview_buffer,
+            ExtraArgs={"ContentType": f"image/{format}"},
+        )
+        return ImageSet(ORIGINAL=original_image_name, PREVIEW=preview_image_name)
 
     @staticmethod
     def _build_image_name(image_bytes: bytes, format: str) -> str:
@@ -91,7 +104,9 @@ class ImageService:
         """
         ## Open regardless of truncated images
         ImageFile.LOAD_TRUNCATED_IMAGES = True  # type: ignore
+        image.seek(0)
         with Image.open(image) as img:
+            image.seek(0)
             return img.format.lower()
 
     def _validate_format(self, format: str) -> None:
@@ -117,3 +132,29 @@ class ImageService:
         Return the set of supported image formats.
         """
         return {fmt.value.lower() for fmt in ImageFormat}
+
+    def _generate_image_preview(self, image: bytes, size: tuple[int, int] = (128, 128)) -> bytes:
+        """
+        Generate a preview of the image with the specified size.
+
+        Parameters
+        ----------
+        image_name : str
+            The name of the image in the S3 bucket.
+        size : tuple[int, int]
+            The desired size (width, height) of the preview. Default is (128, 128).
+
+        Returns
+        -------
+        bytes
+            The preview image data in bytes.
+        """
+        buffer = BytesIO(image)
+        buffer.seek(0)
+
+        with Image.open(buffer) as img:
+            img.thumbnail(size)
+            preview_buffer = BytesIO()
+            img.save(preview_buffer, format=img.format)
+            preview_buffer.seek(0)
+            return preview_buffer.read()

@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from docuisine.schemas.image import ImageSet
 from docuisine.services import ImageService
 from docuisine.utils import errors
 
@@ -35,13 +36,18 @@ def test_upload_image(image_service: ImageService, monkeypatch, mock_s3_client: 
         "docuisine.services.image.ImageService._build_image_name",
         lambda *args: "newimage.jpeg",
     )
+    monkeypatch.setattr(
+        "docuisine.services.image.ImageService._generate_image_preview",
+        lambda self, image: b"preview-image-bytes",
+    )
     mock_s3_client.meta.endpoint_url = "http://mock-s3-endpoint/"
     mock_s3_client.bucket_name = "docuisine-images"
 
     image_bytes = b"fake-image-bytes"
-    image_name = image_service.upload_image(image_bytes)
-    assert image_name == "newimage.jpeg"
-    mock_s3_client.upload_fileobj.assert_called_once()
+    image_set: ImageSet = image_service.upload_image(image_bytes)
+    assert image_set.ORIGINAL == "newimage.jpeg"
+    assert image_set.PREVIEW == "newimage.jpeg"
+    mock_s3_client.upload_fileobj.called_count == 2
 
 
 def test_validate_format_unsupported(image_service: ImageService, monkeypatch):

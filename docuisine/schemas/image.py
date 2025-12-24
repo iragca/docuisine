@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class S3Config(BaseModel):
@@ -21,3 +21,12 @@ class S3Config(BaseModel):
     access_key: str
     secret_key: str
     bucket_name: str = "docuisine-images"
+
+
+class ImageSet(BaseModel):
+    """
+    Represents a set of images including the original and its preview.
+    """
+
+    ORIGINAL: str = Field(..., description="Original image", examples=["123940712123.jpg"])
+    PREVIEW: str = Field(..., description="Preview image", examples=["1412312341234.jpg"])
