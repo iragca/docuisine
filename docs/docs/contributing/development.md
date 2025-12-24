@@ -96,6 +96,7 @@ docker compose up
 - The PostgreSQL should be accessible at port 5432
 - The FastAPI backend should be accessible at port 7000
 - The frontend should be accessible at port 8000
+- The MinIO object storage should be at port 9000, web interface at 9001
 
 ## Identity Access Specification
 
