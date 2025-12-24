@@ -1,4 +1,5 @@
 from typing import Annotated
+from urllib.parse import urljoin
 
 from fastapi import Depends
 
@@ -21,6 +22,7 @@ def get_user_service(
             algorithm=JWTAlgorithm(value=env.JWT_ALGORITHM),
             access_token_expire_minutes=env.JWT_ACCESS_TOKEN_EXPIRE_MINUTES,
         ),
+        image_host=urljoin(env.S3_ENDPOINT_URL, env.S3_BUCKET_NAME),
     )
 
 
