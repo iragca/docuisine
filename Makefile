@@ -26,6 +26,11 @@ dev:
 	sleep 3
 	uv run fastapi dev docuisine/main.py --host 0.0.0.0 --port 7000
 
+## Run development server without docker, using cloud db and S3 storage
+.PHONY: dev-c
+dev-c:
+	uv run fastapi dev docuisine/main.py --host 0.0.0.0 --port 7000
+
 # Stop development server
 .PHONY: dev-down
 dev-down:
