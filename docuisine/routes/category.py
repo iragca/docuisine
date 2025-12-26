@@ -1,11 +1,9 @@
-from typing import Optional
-
 from fastapi import APIRouter, HTTPException, status
 
 from docuisine.db.models import Category
 from docuisine.dependencies import AuthenticatedUser, Category_Service, Image_Service
 from docuisine.schemas import category as category_schemas
-from docuisine.schemas.annotations import CategoryDescription, CategoryName, ImageUpload
+from docuisine.schemas.annotations import CategoryName, ImageUpload
 from docuisine.schemas.common import Detail
 from docuisine.schemas.enums import Role
 from docuisine.utils import errors
