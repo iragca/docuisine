@@ -3,6 +3,7 @@ import json
 
 from botocore.exceptions import ClientError
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from docuisine import routes
 from docuisine.db.database import engine
@@ -47,8 +48,19 @@ async def on_startup(app: FastAPI):
             await engine.dispose()
 
 
+origins = ["http://localhost:5173", "https://docuisine-react.vercel.app/"]
+
+
 app = FastAPI(lifespan=on_startup)
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(routes.root.router)
 app.include_router(routes.auth.router)
