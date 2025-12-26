@@ -26,11 +26,18 @@ policy = {
 
 @asynccontextmanager
 async def on_startup(app: FastAPI):
-    # Create database tables when the application starts
+    """
+    Application startup event handler.
+    
+    Notes
+    -----
+    This startup event runs when the application starts
+    It does two things:
+    1. Creates all database tables based on the defined models
+    2. Ensures the S3 bucket for image storage exists with the correct policy
+    """
     try:
         Base.metadata.create_all(bind=engine)
-
-        # Ensure the S3 bucket exists
         try:
             s3_storage.head_bucket(Bucket=s3_config.bucket_name)
         except ClientError:
