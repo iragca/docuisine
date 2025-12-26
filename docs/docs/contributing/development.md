@@ -98,6 +98,12 @@ docker compose up
 - The frontend should be accessible at port 8000
 - The MinIO object storage should be at port 9000, web interface at 9001
 
+### Cloud Instances
+
+Production backend: https://docuisine.vercel.app
+S3 Storage: https://f33f20a99cc658a06fff07a8ec5188ee.r2.cloudflarestorage.com
+S3 Public acces: https://pub-d3ef28b83a854575bfa54225e768a452.r2.dev
+
 ## Identity Access Specification
 
 Currently there are 3 roles with differing levels of access
