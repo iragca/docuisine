@@ -1,9 +1,9 @@
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
+from .common import Entity
 
-
-class CategoryCreate(BaseModel):
+class CategoryCreate(Entity):
     name: str = Field(..., description="The category name", examples=["Dessert", "Vegetarian"])
     description: Optional[str] = Field(
         None, description="The category description", examples=["Sweet dishes and treats"]

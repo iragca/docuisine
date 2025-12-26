@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from annotated_types import Len, MinLen
-from fastapi import File, UploadFile
+from fastapi import File, Form, UploadFile
 from pydantic import AfterValidator
 
 from docuisine.utils.validation import validate_password, validate_version
@@ -13,3 +13,12 @@ Password = Annotated[
 ]  # Unhashed password
 Version = Annotated[str, MinLen(5), AfterValidator(validate_version)]
 ImageUpload = Annotated[UploadFile, File()]
+
+
+CategoryName = Annotated[
+    str, Form(..., description="The category name", examples=["Dessert", "Vegetarian"])
+]
+CategoryDescription = Annotated[
+    str,
+    Form(..., description="The category description", examples=["Sweet dishes and treats"]),
+]

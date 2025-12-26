@@ -11,7 +11,13 @@ class CategoryService:
     def __init__(self, db_session: Session):
         self.db_session: Session = db_session
 
-    def create_category(self, name: str, description: Optional[str] = None) -> Category:
+    def create_category(
+        self,
+        name: str,
+        description: Optional[str] = None,
+        img: Optional[str] = None,
+        preview_img: Optional[str] = None,
+    ) -> Category:
         """
         Create a new category in the database.
 
@@ -21,6 +27,10 @@ class CategoryService:
             The name of the new category. Must be unique.
         description : Optional[str]
             The description of the category. Default is None.
+        img : Optional[str]
+            The image URL for the category. Default is None.
+        preview_img : Optional[str]
+            The preview image URL for the category. Default is None.
 
         Returns
         -------
@@ -36,7 +46,9 @@ class CategoryService:
         -----
         - This method commits the transaction immediately.
         """
-        new_category = Category(name=name, description=description)
+        new_category = Category(
+            name=name, description=description, img=img, preview_img=preview_img
+        )
         try:
             self.db_session.add(new_category)
             self.db_session.commit()

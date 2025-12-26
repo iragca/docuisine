@@ -34,7 +34,7 @@ async def on_startup(app: FastAPI):
             s3_storage.head_bucket(Bucket=s3_config.bucket_name)
         except ClientError:
             s3_storage.create_bucket(Bucket=s3_config.bucket_name)
-        s3_storage.put_bucket_policy(Bucket=s3_config.bucket_name, Policy=json.dumps(policy))
+            s3_storage.put_bucket_policy(Bucket=s3_config.bucket_name, Policy=json.dumps(policy))
         yield
     finally:
         # Dispose of the database engine when the application shuts down
