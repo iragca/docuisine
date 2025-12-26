@@ -1,8 +1,10 @@
 {
-  "builds": {
-    "src": "docuisine/main.py",
-    "use": "@vercel/python"
-  },
+  "builds": [
+    {
+      "src": "docuisine/main.py",
+      "use": "@vercel/python"
+    }
+  ],
   "routes": [
     {
       "src": "/(.*)",
