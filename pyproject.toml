@@ -64,7 +64,3 @@ S3_ENDPOINT_URL = "http://localhost:9000"
 S3_ACCESS_KEY = "minioadmin"
 S3_SECRET_KEY = "minioadmin"
 S3_BUCKET_NAME = "docuisine-test"
-
-# Vercel deployment settings
-[project.scripts]
-app = "docuisine.main:app"
