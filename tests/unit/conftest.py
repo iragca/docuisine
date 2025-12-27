@@ -104,3 +104,30 @@ def app_admin(app: AppType, admin_user: User):
     """
     app.dependency_overrides[get_client_user] = lambda: admin_user
     return app
+
+
+@pytest.fixture
+def public_client(app: AppType):
+    """
+    Provide a TestClient without any authenticated user.
+    Used in unit tests for public routes that do not require authentication.
+    """
+    yield TestClient(app)
+
+
+@pytest.fixture
+def admin_client(app_admin: AppType):
+    """
+    Provide a TestClient with an admin authenticated user.
+    Used in unit tests for routes that require an authenticated admin user.
+    """
+    yield TestClient(app_admin)
+
+
+@pytest.fixture
+def user_client(app_regular_user: AppType):
+    """
+    Provide a TestClient with a regular authenticated user.
+    Used in unit tests for routes that require an authenticated regular user.
+    """
+    yield TestClient(app_regular_user)
