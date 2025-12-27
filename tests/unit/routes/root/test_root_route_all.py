@@ -14,12 +14,8 @@ class TestGET:
         indirect=["client"],
         ids=["public", "user", "admin"],
     )
-    def test_health_route(self, client: TestClient, expected_status: int):
-        """Test the public health route with various user authentications returns correct status and message."""
-        response = client.get("/health")
+    def test_root_route(self, client: TestClient, expected_status: int):
+        """Test the public root route returns status 200 and correct message."""
+        response = client.get("/")
         assert response.status_code == expected_status, response.text
-        if expected_status == status.HTTP_200_OK:
-            data = response.json()
-        assert data["status"] == "healthy"
-        assert "commit_hash" in data
-        assert "version" in data
+        assert response.json() == "Hello, from Docuisine!"
