@@ -1,13 +1,11 @@
 from fastapi import status
-from fastapi.applications import AppType
 from fastapi.testclient import TestClient
 
 
 class TestGET:
-    def test_health_route_public(self, app: AppType):
+    def test_health_route_public(self, public_client: TestClient):
         """Test the public health route without authentication returns status 200 and correct message."""
-        client = TestClient(app)
-        response = client.get("/health")
+        response = public_client.get("/health")
         assert response.status_code == status.HTTP_200_OK, response.text
         data = response.json()
         assert data["status"] == "healthy"
