@@ -1,32 +1,13 @@
+from typing import Callable
 from unittest.mock import MagicMock
 
-from fastapi.applications import AppType
 from fastapi.testclient import TestClient
 import pytest
 
 from docuisine.db.models import User
 from docuisine.dependencies.auth import get_client_user
-from docuisine.main import app as fastapi_app
+from docuisine.main import app
 from docuisine.schemas.enums import Role
-
-
-@pytest.fixture(scope="function")
-def app():
-    """
-    Provide the FastAPI app for testing.
-    Used in units test for routes by mocking the services with a test client.
-    """
-    return fastapi_app
-
-
-@pytest.fixture(scope="module")
-def mock_user_service():
-    """
-    Provide a mock UserService.
-    Used in units test for routes by mocking the services.
-    """
-    mock = MagicMock()
-    return mock
 
 
 @pytest.fixture
@@ -54,7 +35,7 @@ def regular_user():
     NOTES
     -----
     Do not use mock user with MagicMock.
-    This will break identity access checks in routes
+    This will break identity access checks in routes.
     """
     return User(
         id=1,
@@ -66,16 +47,6 @@ def regular_user():
 
 
 @pytest.fixture
-def app_regular_user(app: AppType, regular_user: User):
-    """
-    Provide a FastAPI app with a regular authenticated user.
-    Used in unit tests for routes that require an authenticated regular user.
-    """
-    app.dependency_overrides[get_client_user] = lambda: regular_user
-    return app
-
-
-@pytest.fixture
 def admin_user():
     """
     Provide an admin user instance for testing.
@@ -84,7 +55,7 @@ def admin_user():
     NOTES
     -----
     Do not use mock user with MagicMock.
-    This will break identity access checks in routes
+    This will break identity access checks in routes.
     """
     return User(
         id=2,
@@ -96,16 +67,6 @@ def admin_user():
 
 
 @pytest.fixture
-def app_admin(app: AppType, admin_user: User):
-    """
-    Provide a FastAPI app with an admin authenticated user.
-    Used in unit tests for routes that require an authenticated admin user.
-    """
-    app.dependency_overrides[get_client_user] = lambda: admin_user
-    return app
-
-
-@pytest.fixture
 def public_user():
     """
     Provide a public (unauthenticated) pseudo user instance for testing.
@@ -114,7 +75,7 @@ def public_user():
     NOTES
     -----
     Do not use mock user with MagicMock.
-    This will break identity access checks in routes
+    This will break identity access checks in routes.
     """
     return User(
         id=3,
@@ -124,56 +85,47 @@ def public_user():
         role=Role.PUBLIC,
     )
 
-@pytest.fixture
-def app_public(app: AppType, public_user: User):
-    """
-    Provide a FastAPI app with a public (unauthenticated) pseudo user.
-    Used in unit tests for routes that require no authenticated user.
-    """
-    app.dependency_overrides[get_client_user] = lambda: public_user
-    return app
-
 
 @pytest.fixture
-def public_client(app_public: AppType):
+def setup_client(
+    admin_user: User, regular_user: User, public_user: User
+) -> Callable[[Role], TestClient | None]:
     """
-    Provide a TestClient without any authenticated user.
-    Used in unit tests for public routes that do not require authentication.
-    """
-    app_public.dependency_overrides[get_client_user] = lambda: public_user
-    return TestClient(app_public)
+    Provide a TestClient setup function based on client role.
 
+    Used in unit tests for routes to create clients with different authenticated user roles.
+    """
 
-@pytest.fixture
-def admin_client(app_admin: AppType):
-    """
-    Provide a TestClient with an admin authenticated user.
-    Used in unit tests for routes that require an authenticated admin user.
-    """
-    return TestClient(app_admin)
+    def setup_client(client_name: Role) -> TestClient | None:
+        """
+        Setup TestClient based on client role.
 
+        Parameters
+        ----------
+        client_name : Role
+            The role of the client to setup (ADMIN, USER, PUBLIC).
 
-@pytest.fixture
-def user_client(app_regular_user: AppType):
-    """
-    Provide a TestClient with a regular authenticated user.
-    Used in unit tests for routes that require an authenticated regular user.
-    """
-    return TestClient(app_regular_user)
+        Returns
+        -------
+        TestClient
+            The configured TestClient instance.
 
+        Raises
+        ------
+        ValueError
+            If an unknown `client_name` is provided.
+        """
+        match client_name:
+            case Role.ADMIN:
+                app.dependency_overrides[get_client_user] = lambda: admin_user
+                return TestClient(app)
+            case Role.USER:
+                app.dependency_overrides[get_client_user] = lambda: regular_user
+                return TestClient(app)
+            case Role.PUBLIC:
+                app.dependency_overrides[get_client_user] = lambda: public_user
+                return TestClient(app)
+            case _:
+                raise ValueError(f"Unknown client_name: {client_name}")
 
-@pytest.fixture
-def clients(
-    public_client: TestClient,
-    user_client: TestClient,
-    admin_client: TestClient,
-) -> dict[str, TestClient]:
-    """
-    Provide a dictionary of TestClients for different user roles.
-    Used in unit tests for routes that require different levels of authentication.
-    """
-    return {
-        "public": public_client,
-        "user": user_client,
-        "admin": admin_client,
-    }
+    return setup_client
