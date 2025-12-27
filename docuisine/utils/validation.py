@@ -1,4 +1,5 @@
 import re
+from typing import Iterable, Literal, Optional
 
 from docuisine.schemas.enums import Role
 from docuisine.utils import errors
@@ -148,7 +149,10 @@ def validate_password(password: str) -> str:
     return password
 
 
-def validate_role(role: str, allowed_roles: list[Role] = [Role.ADMIN]) -> None:
+def validate_role(
+    role: str,
+    allowed_roles: Optional[Iterable[Role] | Literal["all", "a", "au"]] = "a",
+) -> None:
     """
     Validate that the role is within the allowed roles.
 
@@ -156,29 +160,37 @@ def validate_role(role: str, allowed_roles: list[Role] = [Role.ADMIN]) -> None:
     ----------
     role : str
         The role string to validate.
-    allowed_roles : list[Role], optional
+    allowed_roles : list[Role], Literal["all", "a", "au"], optional
         The list of allowed roles, by default [Role.ADMIN].
+        "all" allows all roles. "a" allows only Admin role.
+        "au" allows Admin and User roles.
 
     Raises
     ------
     ValueError
         If the role is not within the allowed roles.
     """
+
+    # Default: admin-only
+    if allowed_roles is None:
+        allowed_roles = {Role.ADMIN}
+
+    # Expand shorthands
+    if allowed_roles == "all":
+        allowed_roles = {Role.PUBLIC, Role.USER, Role.ADMIN}
+    elif allowed_roles == "a":
+        allowed_roles = {Role.ADMIN}
+    elif allowed_roles == "au":
+        allowed_roles = {Role.ADMIN, Role.USER}
+
+    # Parse role
     try:
         role_enum = Role(role)
-
-        match role_enum:
-            case Role.PUBLIC:
-                if Role.PUBLIC not in allowed_roles:
-                    raise errors.UnauthorizedError
-            case Role.USER:
-                if Role.USER not in allowed_roles:
-                    raise errors.ForbiddenAccessError
-            case Role.ADMIN:
-                if Role.ADMIN not in allowed_roles:
-                    raise errors.ForbiddenAccessError
-            case _:
-                raise errors.UnauthorizedError
-
     except ValueError:
         raise errors.UnauthorizedError
+
+    # Authorization check
+    if role_enum not in allowed_roles:
+        if role_enum is Role.PUBLIC:
+            raise errors.UnauthorizedError
+        raise errors.ForbiddenAccessError

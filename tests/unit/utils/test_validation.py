@@ -90,6 +90,14 @@ def test_validate_pattern_invalid():
         (Role.USER, [Role.ADMIN], True),
         (Role.PUBLIC, [Role.ADMIN, Role.USER], True),
         (Role.USER, [Role.USER, Role.PUBLIC], False),
+        (Role.PUBLIC, "all", False),
+        (Role.ADMIN, "all", False),
+        (Role.USER, None, True),
+        (Role.ADMIN, None, False),
+        (Role.PUBLIC, "a", True),
+        (Role.USER, "a", True),
+        (Role.ADMIN, "au", False),
+        (Role.PUBLIC, "au", True),
     ],
 )
 def test_validate_role(role, allowed_roles, should_raise):
