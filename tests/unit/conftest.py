@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Union
 from unittest.mock import MagicMock
 
 from fastapi.testclient import TestClient
@@ -91,18 +91,18 @@ def setup_client(
     admin_user: User, regular_user: User, public_user: User
 ) -> Callable[[Role], TestClient | None]:
     """
-    Provide a TestClient setup function based on client role.
+    Provide a TestClient factory function based on client role.
 
     Used in unit tests for routes to create clients with different authenticated user roles.
     """
 
-    def setup_client(client_name: Role) -> TestClient | None:
+    def setup_client(client_name: Union[Role, str]) -> TestClient | None:
         """
-        Setup TestClient based on client role.
+        Setup TestClient based on client role using a client factory.
 
         Parameters
         ----------
-        client_name : Role
+        client_name : Union[Role, str]
             The role of the client to setup (ADMIN, USER, PUBLIC).
 
         Returns
@@ -115,6 +115,9 @@ def setup_client(
         ValueError
             If an unknown `client_name` is provided.
         """
+        if isinstance(client_name, str):
+            client_name = Role(client_name.lower().strip())
+
         match client_name:
             case Role.ADMIN:
                 app.dependency_overrides[get_client_user] = lambda: admin_user
