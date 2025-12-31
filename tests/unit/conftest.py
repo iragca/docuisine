@@ -89,11 +89,17 @@ def public_user():
 @pytest.fixture
 def setup_client(
     admin_user: User, regular_user: User, public_user: User
-) -> Callable[[Role], TestClient | None]:
+) -> Callable[[Union[Role, str]], TestClient | None]:
     """
     Provide a TestClient factory function based on client role.
 
     Used in unit tests for routes to create clients with different authenticated user roles.
+
+    Returns
+    -------
+    Callable[[Union[Role, str]], TestClient | None]
+        A factory function that creates TestClient instances for different roles.
+        The returned function can raise ValueError if an unknown client_name is provided.
     """
 
     def setup_client(client_name: Union[Role, str]) -> TestClient | None:
