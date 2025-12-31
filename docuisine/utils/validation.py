@@ -167,8 +167,11 @@ def validate_role(
 
     Raises
     ------
-    ValueError
-        If the role is not within the allowed roles.
+    errors.UnauthorizedError
+        If the role string is invalid or represents a public role
+        that is not allowed to access the resource.
+    errors.ForbiddenAccessError
+        If the role is valid but not within the allowed roles.
     """
 
     # Default: admin-only
