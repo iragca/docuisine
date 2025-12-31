@@ -18,7 +18,3 @@ ImageUpload = Annotated[UploadFile, File()]
 CategoryName = Annotated[
     str, Form(..., description="The category name", examples=["Dessert", "Vegetarian"])
 ]
-CategoryDescription = Annotated[
-    str,
-    Form(..., description="The category description", examples=["Sweet dishes and treats"]),
-]

@@ -85,8 +85,8 @@ async def delete_user(
     Access Level: Admin, User
     """
     if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
-    if authenticated_user.id != user_id:
+        raise errors.UnauthorizedError
+    if (authenticated_user.id != user_id) and (authenticated_user.role != Role.ADMIN):
         raise errors.ForbiddenAccessError
     try:
         user_service.delete_user(user_id=user_id)
@@ -119,7 +119,7 @@ async def update_user_email(
     Access Level: Admin, User
     """
     if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+        raise errors.UnauthorizedError
     if authenticated_user.id != user.id:
         raise errors.ForbiddenAccessError
     try:
@@ -156,7 +156,7 @@ async def update_user_password(
     Access Level: Admin, User
     """
     if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+        raise errors.UnauthorizedError
     if authenticated_user.id != user.id:
         raise errors.ForbiddenAccessError
     try:
@@ -194,7 +194,7 @@ async def update_user_img(
     Access Level: Admin, User
     """
     if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+        raise errors.UnauthorizedError
     if authenticated_user.id != user_id:
         raise errors.ForbiddenAccessError
 

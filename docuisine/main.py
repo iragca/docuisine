@@ -28,7 +28,7 @@ policy = {
 async def on_startup(app: FastAPI):
     """
     Application startup event handler.
-    
+
     Notes
     -----
     This startup event runs when the application starts
@@ -59,7 +59,7 @@ app = FastAPI(lifespan=on_startup)
 
 
 app.add_middleware(
-    CORSMiddleware, # type: ignore
+    CORSMiddleware,  # type: ignore
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],

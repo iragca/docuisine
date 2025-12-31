@@ -13,6 +13,7 @@ class CategoryCreate(Entity):
 
 
 class CategoryUpdate(Entity):
+    id: int = Field(..., description="The category's unique identifier", examples=[1])
     name: Optional[str] = Field(None, description="The category name", examples=["Dessert"])
     description: Optional[str] = Field(
         None, description="The category description", examples=["Sweet dishes and treats"]

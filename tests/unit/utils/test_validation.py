@@ -1,10 +1,14 @@
+from fastapi import HTTPException
+import pytest
 from pytest import raises
 
+from docuisine.schemas.enums import Role
 from docuisine.utils.validation import (
     has_only_digits,
     has_two_dots,
     validate_password,
     validate_pattern,
+    validate_role,
     validate_version,
 )
 
@@ -77,3 +81,28 @@ def test_validate_pattern_invalid():
         validate_pattern("abc-123", r"^[a-z0-9]+$", error_message="Invalid pattern")
     with raises(ValueError, match="Invalid pattern"):
         validate_pattern("test@456", r"^[A-Z0-9_]+$", error_message="Invalid pattern")
+
+
+@pytest.mark.parametrize(
+    "role, allowed_roles, should_raise",
+    [
+        (Role.ADMIN, [Role.ADMIN], False),
+        (Role.USER, [Role.ADMIN], True),
+        (Role.PUBLIC, [Role.ADMIN, Role.USER], True),
+        (Role.USER, [Role.USER, Role.PUBLIC], False),
+        (Role.PUBLIC, "all", False),
+        (Role.ADMIN, "all", False),
+        (Role.USER, None, True),
+        (Role.ADMIN, None, False),
+        (Role.PUBLIC, "a", True),
+        (Role.USER, "a", True),
+        (Role.ADMIN, "au", False),
+        (Role.PUBLIC, "au", True),
+    ],
+)
+def test_validate_role(role, allowed_roles, should_raise):
+    if should_raise:
+        with raises(HTTPException):
+            validate_role(role.value, allowed_roles)
+    else:
+        validate_role(role.value, allowed_roles)  # Should not raise

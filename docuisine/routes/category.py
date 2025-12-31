@@ -1,12 +1,14 @@
-from fastapi import APIRouter, HTTPException, status
+from typing import Optional
+
+from fastapi import APIRouter, Form, HTTPException, status
 
 from docuisine.db.models import Category
 from docuisine.dependencies import AuthenticatedUser, Category_Service, Image_Service
 from docuisine.schemas import category as category_schemas
 from docuisine.schemas.annotations import CategoryName, ImageUpload
 from docuisine.schemas.common import Detail
-from docuisine.schemas.enums import Role
 from docuisine.utils import errors
+from docuisine.utils.validation import validate_role
 
 router = APIRouter(prefix="/categories", tags=["Categories"])
 
@@ -53,27 +55,32 @@ async def get_category(
     responses={status.HTTP_409_CONFLICT: {"model": Detail}},
 )
 async def create_category(
-    name: CategoryName,
-    image: ImageUpload,
     category_service: Category_Service,
     authenticated_user: AuthenticatedUser,
     image_service: Image_Service,
+    name: CategoryName,
+    image: Optional[ImageUpload] = None,
+    description: Optional[str] = Form(
+        None,
+        description="The category description",
+        examples=["Sweet dishes and treats"],
+    ),
 ) -> category_schemas.CategoryOut:
     """
     Create a new category.
 
     Access Level: Admin
     """
-    if authenticated_user.role != Role.ADMIN:
-        raise errors.ForbiddenAccessError
-
-    image_set = image_service.upload_image(await image.read())
+    validate_role(authenticated_user.role, "a")
+    if image is not None:
+        image_set = image_service.upload_image(await image.read())
 
     try:
         new_category: Category = category_service.create_category(
             name=name,
-            img=image_set.original,
-            preview_img=image_set.preview,
+            description=description,
+            img=image_set.original if image is not None else None,
+            preview_img=image_set.preview if image is not None else None,
         )
         return category_schemas.CategoryOut.model_validate(new_category)
     except errors.CategoryExistsError as e:
@@ -84,7 +91,7 @@ async def create_category(
 
 
 @router.put(
-    "/{category_id}",
+    "/",
     status_code=status.HTTP_200_OK,
     response_model=category_schemas.CategoryOut,
     responses={
@@ -94,7 +101,6 @@ async def create_category(
     },
 )
 async def update_category(
-    category_id: int,
     category: category_schemas.CategoryUpdate,
     category_service: Category_Service,
     authenticated_user: AuthenticatedUser,
@@ -104,11 +110,10 @@ async def update_category(
 
     Access Level: Admin
     """
-    if authenticated_user.role != Role.ADMIN:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "a")
     try:
         updated_category: Category = category_service.update_category(
-            category_id=category_id, name=category.name, description=category.description
+            category_id=category.id, name=category.name, description=category.description
         )
         return category_schemas.CategoryOut.model_validate(updated_category)
     except errors.CategoryNotFoundError as e:
@@ -137,8 +142,7 @@ async def delete_category(
 
     Access Level: Admin
     """
-    if authenticated_user.role != Role.ADMIN:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "a")
     try:
         category_service.delete_category(category_id=category_id)
         return Detail(detail=f"Category with ID {category_id} has been deleted.")

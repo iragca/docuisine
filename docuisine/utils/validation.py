@@ -1,4 +1,8 @@
 import re
+from typing import Iterable, Literal, Optional
+
+from docuisine.schemas.enums import Role
+from docuisine.utils import errors
 
 
 def has_two_dots(version: str) -> str:
@@ -143,3 +147,53 @@ def validate_password(password: str) -> str:
         "Password must contain at least one special character.",
     )
     return password
+
+
+def validate_role(
+    role: str,
+    allowed_roles: Optional[Iterable[Role] | Literal["all", "a", "au"]] = "a",
+) -> None:
+    """
+    Validate that the role is within the allowed roles.
+
+    Parameters
+    ----------
+    role : str
+        The role string to validate.
+    allowed_roles : Iterable[Role], Literal["all", "a", "au"], optional
+        The iterable of allowed roles, by default "a" (Admin-only).
+        "all" allows all roles. "a" allows only Admin role.
+        "au" allows Admin and User roles.
+
+    Raises
+    ------
+    errors.UnauthorizedError
+        If the role string is invalid or represents a public role
+        that is not allowed to access the resource.
+    errors.ForbiddenAccessError
+        If the role is valid but not within the allowed roles.
+    """
+
+    # Default: admin-only
+    if allowed_roles is None:
+        allowed_roles = {Role.ADMIN}
+
+    # Expand shorthands
+    if allowed_roles == "all":
+        allowed_roles = {Role.PUBLIC, Role.USER, Role.ADMIN}
+    elif allowed_roles == "a":
+        allowed_roles = {Role.ADMIN}
+    elif allowed_roles == "au":
+        allowed_roles = {Role.ADMIN, Role.USER}
+
+    # Parse role
+    try:
+        role_enum = Role(role)
+    except ValueError:
+        raise errors.UnauthorizedError
+
+    # Authorization check
+    if role_enum not in allowed_roles:
+        if role_enum is Role.PUBLIC:
+            raise errors.UnauthorizedError
+        raise errors.ForbiddenAccessError

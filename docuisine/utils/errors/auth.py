@@ -21,3 +21,8 @@ ForbiddenAccessError = HTTPException(
     status_code=status.HTTP_403_FORBIDDEN,
     detail="You do not have permission to perform this action.",
 )
+
+UnauthorizedError = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Not authenticated",
+)

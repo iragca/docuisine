@@ -1,4 +1,9 @@
-from .auth import ForbiddenAccessError, InvalidCredentialsError, InvalidPasswordError
+from .auth import (
+    ForbiddenAccessError,
+    InvalidCredentialsError,
+    InvalidPasswordError,
+    UnauthorizedError,
+)
 from .category import CategoryExistsError, CategoryNotFoundError
 from .image import UnsupportedImageFormatError
 from .ingredient import IngredientExistsError, IngredientNotFoundError
@@ -10,6 +15,7 @@ __all__ = [
     "ForbiddenAccessError",
     "InvalidCredentialsError",
     "InvalidPasswordError",
+    "UnauthorizedError",
     "DuplicateEmailError",
     "UserExistsError",
     "UserNotFoundError",
