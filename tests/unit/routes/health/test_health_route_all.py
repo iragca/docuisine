@@ -17,10 +17,13 @@ class TestGET:
         ],
     )
     def test_health_route(
-        self, client_name: str, expected_status: int, setup_client: Callable[[Role | str], TestClient]
+        self,
+        client_name: str,
+        expected_status: int,
+        create_client: Callable[[Role | str], TestClient],
     ):
         """Test the public health route with admin user authentication returns status 200 and correct message."""
-        response = setup_client(client_name).get("/health/")
+        response = create_client(client_name).get("/health/")
         assert response.status_code == expected_status, response.text
         data = response.json()
         assert data["status"] == "healthy"

@@ -17,10 +17,10 @@ class TestGET:
         ],
     )
     def test_root_route(
-        self, client_name: str, expected_status: int, setup_client: Callable[[str], TestClient]
+        self, client_name: str, expected_status: int, create_client: Callable[[str], TestClient]
     ):
         """Test the public root route returns status 200 and correct message."""
-        client = setup_client(client_name)
+        client = create_client(client_name)
         response = client.get("/")
         assert response.status_code == expected_status, response.text
         assert response.json() == "Hello, from Docuisine!"

@@ -87,7 +87,7 @@ def public_user():
 
 
 @pytest.fixture
-def setup_client(
+def create_client(
     admin_user: User, regular_user: User, public_user: User
 ) -> Callable[[Union[Role, str]], TestClient | None]:
     """
@@ -102,7 +102,7 @@ def setup_client(
         The returned function can raise ValueError if an unknown client_name is provided.
     """
 
-    def setup_client(client_name: Union[Role, str]) -> TestClient | None:
+    def client_factory(client_name: Union[Role, str]) -> TestClient | None:
         """
         Setup TestClient based on client role using a client factory.
 
@@ -137,4 +137,4 @@ def setup_client(
             case _:
                 raise ValueError(f"Unknown client_name: {client_name}")
 
-    return setup_client
+    return client_factory

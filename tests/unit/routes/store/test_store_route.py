@@ -23,7 +23,7 @@ class TestGET:
         client_name: Role,
         expected_status: int,
         expected_response: dict | list,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test GET routes for all scenarios (all stores, by ID, not found)."""
 
@@ -39,7 +39,7 @@ class TestGET:
                 mock.get_store.side_effect = errors.StoreNotFoundError(store_id=999)
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_store_service] = mock_store_service  # type: ignore
 
         # Make the request
@@ -63,7 +63,7 @@ class TestPOST:
         client_name: Role,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test creating a new store."""
 
@@ -76,7 +76,7 @@ class TestPOST:
                     mock.create_store.side_effect = errors.StoreExistsError(name="Existing Store")
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_store_service] = (  # type: ignore
             mock_store_service
         )
@@ -103,7 +103,7 @@ class TestPUT:
         input_data: dict,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test updating stores with various scenarios."""
 
@@ -117,7 +117,7 @@ class TestPUT:
                 mock.update_store.side_effect = errors.StoreExistsError(name="Existing Store")
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_store_service] = mock_store_service  # type: ignore
 
         url = "/stores/1" if scenario not in ["not_found"] else "/stores/999"
@@ -137,7 +137,7 @@ class TestDELETE:
         store_id: int,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test deleting stores with various scenarios."""
 
@@ -149,7 +149,7 @@ class TestDELETE:
                 mock.delete_store.side_effect = errors.StoreNotFoundError(store_id=store_id)
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_store_service] = mock_store_service  # type: ignore
 
         response = client.delete(f"/stores/{store_id}")

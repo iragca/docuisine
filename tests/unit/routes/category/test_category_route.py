@@ -23,7 +23,7 @@ class TestGET:
         client_name: Role,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test getting categories."""
 
@@ -40,7 +40,7 @@ class TestGET:
                     mock.get_category.side_effect = errors.CategoryNotFoundError(category_id=999)
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_category_service] = mock_category_service  # type: ignore
 
         match scenario:
@@ -64,7 +64,7 @@ class TestPOST:
         client_name: Role,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test creating a category (success or conflict)."""
 
@@ -88,7 +88,7 @@ class TestPOST:
             case _:
                 pass
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_category_service] = lambda: mock_category_service  # type: ignore
         client.app.dependency_overrides[get_image_service] = lambda: mock_image_service  # type: ignore
 
@@ -132,7 +132,7 @@ class TestPUT:
         client_name: Role,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test updating a category successfully."""
 
@@ -159,7 +159,7 @@ class TestPUT:
                     preview_img="test",
                 )
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_category_service] = lambda: mock_category_service  # type: ignore
         match scenario:
             case "update_name_only":
@@ -189,7 +189,7 @@ class TestDELETE:
         category_id: int,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test deleting a category successfully."""
 
@@ -202,7 +202,7 @@ class TestDELETE:
             case _:
                 mock_category_service.delete_category.return_value = None
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_category_service] = lambda: mock_category_service  # type: ignore
 
         response = client.delete(f"/categories/{category_id}")

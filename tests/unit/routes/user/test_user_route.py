@@ -23,7 +23,7 @@ class TestGET:
         client_name: Role,
         expected_status: int,
         expected_response: dict | list,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test GET routes for all scenarios (all users, not found)."""
 
@@ -37,7 +37,7 @@ class TestGET:
                 mock.get_user.side_effect = errors.UserNotFoundError(user_id=999)
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_user_service] = mock_user_service  # type: ignore
 
         # Make the request
@@ -61,7 +61,7 @@ class TestPOST:
         client_name: Role,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test creating a new user."""
 
@@ -74,7 +74,7 @@ class TestPOST:
                     mock.create_user.side_effect = errors.UserExistsError(username="user1")
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_user_service] = (  # type: ignore
             mock_user_service
         )
@@ -100,7 +100,7 @@ class TestPUT:
         input_data: dict,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test updating users with various scenarios."""
 
@@ -120,7 +120,7 @@ class TestPUT:
                 )
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_user_service] = mock_user_service  # type: ignore
 
         # Route depends on scenario
@@ -144,7 +144,7 @@ class TestDELETE:
         user_id: int,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test deleting users with various scenarios."""
 
@@ -158,7 +158,7 @@ class TestDELETE:
                 mock.delete_user.side_effect = errors.ForbiddenAccessError
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_user_service] = mock_user_service  # type: ignore
 
         response = client.delete(f"/users/{user_id}")

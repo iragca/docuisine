@@ -22,7 +22,7 @@ class TestPOST:
         client_name: Role,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         ## Setup
         mock_user_service = MagicMock()
@@ -44,7 +44,7 @@ class TestPOST:
                     username="nonexistentuser"
                 )
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[services.get_user_service] = (  # type: ignore
             lambda: mock_user_service
         )

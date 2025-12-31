@@ -23,7 +23,7 @@ class TestGET:
         client_name: Role,
         expected_status: int,
         expected_response: dict | list,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test GET routes for all scenarios (all recipes, by ID, not found)."""
 
@@ -39,7 +39,7 @@ class TestGET:
                 mock.get_recipe.side_effect = errors.RecipeNotFoundError(recipe_id=999)
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_recipe_service] = mock_recipe_service  # type: ignore
 
         # Make the request
@@ -63,7 +63,7 @@ class TestPOST:
         client_name: Role,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test creating a new recipe."""
 
@@ -78,7 +78,7 @@ class TestPOST:
                     )
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_recipe_service] = (  # type: ignore
             mock_recipe_service
         )
@@ -106,7 +106,7 @@ class TestPUT:
         input_data: dict,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test updating recipes with various scenarios."""
 
@@ -120,7 +120,7 @@ class TestPUT:
                 mock.update_recipe.side_effect = errors.RecipeExistsError(name="Existing Recipe")
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_recipe_service] = mock_recipe_service  # type: ignore
 
         url = "/recipes/1" if scenario not in ["not_found"] else "/recipes/999"
@@ -140,7 +140,7 @@ class TestDELETE:
         recipe_id: int,
         expected_status: int,
         expected_response: dict,
-        setup_client: Callable[[Role], TestClient],
+        create_client: Callable[[Role], TestClient],
     ):
         """Test deleting recipes with various scenarios."""
 
@@ -152,7 +152,7 @@ class TestDELETE:
                 mock.delete_recipe.side_effect = errors.RecipeNotFoundError(recipe_id=recipe_id)
             return mock
 
-        client = setup_client(client_name)
+        client = create_client(client_name)
         client.app.dependency_overrides[get_recipe_service] = mock_recipe_service  # type: ignore
 
         response = client.delete(f"/recipes/{recipe_id}")
