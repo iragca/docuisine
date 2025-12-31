@@ -4,8 +4,8 @@ from docuisine.db.models import Ingredient
 from docuisine.dependencies import AuthenticatedUser, Ingredient_Service
 from docuisine.schemas import ingredient as ingredient_schemas
 from docuisine.schemas.common import Detail
-from docuisine.schemas.enums import Role
 from docuisine.utils import errors
+from docuisine.utils.validation import validate_role
 
 router = APIRouter(prefix="/ingredients", tags=["Ingredients"])
 
@@ -67,8 +67,7 @@ async def create_ingredient(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "au")
     try:
         new_ingredient: Ingredient = ingredient_service.create_ingredient(
             name=ingredient.name,
@@ -103,8 +102,7 @@ async def update_ingredient(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "au")
     try:
         updated_ingredient: Ingredient = ingredient_service.update_ingredient(
             ingredient_id=ingredient_id,
@@ -141,8 +139,7 @@ async def delete_ingredient(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "au")
     try:
         ingredient_service.delete_ingredient(ingredient_id=ingredient_id)
         return Detail(detail=f"Ingredient with ID {ingredient_id} has been deleted.")

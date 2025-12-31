@@ -98,11 +98,17 @@ def test_validate_pattern_invalid():
         (Role.USER, "a", True),
         (Role.ADMIN, "au", False),
         (Role.PUBLIC, "au", True),
+        (None, "au", True),
+        ("public", "au", True),
+        ("admin", "a", False),
+        ("invalid_role", "a", True),
+        (None, None, True),
+        ("user", "a", True),
     ],
 )
 def test_validate_role(role, allowed_roles, should_raise):
     if should_raise:
         with raises(HTTPException):
-            validate_role(role.value, allowed_roles)
+            validate_role(role, allowed_roles)
     else:
-        validate_role(role.value, allowed_roles)  # Should not raise
+        validate_role(role, allowed_roles)  # Should not raise

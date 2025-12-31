@@ -4,8 +4,7 @@ from docuisine.dependencies import AuthenticatedUser, Image_Service
 from docuisine.schemas import image as image_schemas
 from docuisine.schemas.annotations import ImageUpload
 from docuisine.schemas.common import Detail
-from docuisine.schemas.enums import Role
-from docuisine.utils import errors
+from docuisine.utils.validation import validate_role
 
 router = APIRouter(prefix="/image", tags=["Image"])
 
@@ -24,6 +23,5 @@ async def upload_image(
 
     Access Level: Admin
     """
-    if authenticated_user.role not in {Role.ADMIN}:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "a")
     return image_service.upload_image(await image.read())

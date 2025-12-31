@@ -9,6 +9,7 @@ from docuisine.schemas.annotations import ImageUpload
 from docuisine.schemas.common import Detail
 from docuisine.schemas.enums import Role
 from docuisine.utils import errors
+from docuisine.utils.validation import validate_role
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -84,8 +85,7 @@ async def delete_user(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.UnauthorizedError
+    validate_role(authenticated_user.role, "au")
     if (authenticated_user.id != user_id) and (authenticated_user.role != Role.ADMIN):
         raise errors.ForbiddenAccessError
     try:
@@ -118,8 +118,7 @@ async def update_user_email(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.UnauthorizedError
+    validate_role(authenticated_user.role, "au")
     if authenticated_user.id != user.id:
         raise errors.ForbiddenAccessError
     try:
@@ -155,8 +154,7 @@ async def update_user_password(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.UnauthorizedError
+    validate_role(authenticated_user.role, "au")
     if authenticated_user.id != user.id:
         raise errors.ForbiddenAccessError
     try:
@@ -193,8 +191,7 @@ async def update_user_img(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.UnauthorizedError
+    validate_role(authenticated_user.role, "au")
     if authenticated_user.id != user_id:
         raise errors.ForbiddenAccessError
 

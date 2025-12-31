@@ -6,6 +6,7 @@ from docuisine.schemas import recipe as recipe_schemas
 from docuisine.schemas.common import Detail
 from docuisine.schemas.enums import Role
 from docuisine.utils import errors
+from docuisine.utils.validation import validate_role
 
 router = APIRouter(prefix="/recipes", tags=["Recipes"])
 
@@ -73,8 +74,7 @@ async def create_recipe(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "au")
     try:
         new_recipe: Recipe = recipe_service.create_recipe(
             user_id=authenticated_user.id,
@@ -110,8 +110,7 @@ async def update_recipe(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "au")
     if authenticated_user.role == Role.USER:
         if recipe_id not in {r.id for r in authenticated_user.recipes}:
             raise errors.ForbiddenAccessError
@@ -146,8 +145,7 @@ async def delete_recipe(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "au")
     if authenticated_user.role == Role.USER:
         if recipe_id not in {r.id for r in authenticated_user.recipes}:
             raise errors.ForbiddenAccessError

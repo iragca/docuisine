@@ -6,6 +6,7 @@ from docuisine.schemas import store as store_schemas
 from docuisine.schemas.common import Detail
 from docuisine.schemas.enums import Role
 from docuisine.utils import errors
+from docuisine.utils.validation import validate_role
 
 router = APIRouter(prefix="/stores", tags=["Stores"])
 
@@ -56,8 +57,7 @@ async def create_store(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "au")
     try:
         new_store: Store = store_service.create_store(
             name=store.name,
@@ -93,8 +93,7 @@ async def update_store(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "au")
     try:
         updated: Store = store_service.update_store(
             store_id=store_id,
@@ -127,8 +126,7 @@ async def delete_store(
 
     Access Level: Admin, User
     """
-    if authenticated_user.role not in {Role.ADMIN, Role.USER}:
-        raise errors.ForbiddenAccessError
+    validate_role(authenticated_user.role, "au")
     try:
         store_service.delete_store(store_id=store_id)
         return Detail(detail=f"Store with ID {store_id} has been deleted.")

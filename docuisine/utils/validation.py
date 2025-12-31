@@ -188,7 +188,10 @@ def validate_role(
 
     # Parse role
     try:
-        role_enum = Role(role)
+        if role is None:
+            role_enum = Role.PUBLIC
+        else:
+            role_enum = Role(role)
     except ValueError:
         raise errors.UnauthorizedError
 
