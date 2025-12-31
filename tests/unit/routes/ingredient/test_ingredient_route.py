@@ -84,7 +84,7 @@ class TestPOST:
             mock_ingredient_service
         )
 
-        ## Setup
+        ## Test
         ingredient_data = {"name": "Eggs", "description": "Large eggs"}
         response = client.post("/ingredients", json=ingredient_data)
         assert response.status_code == expected_status, response.text
