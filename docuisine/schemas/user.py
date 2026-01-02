@@ -1,9 +1,10 @@
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from docuisine.schemas.annotations import Password, Username
 from docuisine.schemas.common import Default, Entity
+from docuisine.schemas.enums import Role
 
 
 class UserCreate(BaseModel):
@@ -59,5 +60,6 @@ class UserOut(Entity, Default):
     email: Optional[EmailStr] = Field(
         None, description="The user's email address", examples=["user@example.com"]
     )
+    role: Union[Role, str] = Field(..., description="The user's role", examples=["user", "admin"])
 
     model_config = ConfigDict(from_attributes=True)
