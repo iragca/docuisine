@@ -35,6 +35,8 @@ class TestGET:
                 ]
             elif scenario == "get_not_found":
                 mock.get_user.side_effect = errors.UserNotFoundError(user_id=999)
+            elif scenario == "get_existing":
+                mock.get_user.return_value = User(**p.GET_A_USER_RESPONSE)
             return mock
 
         client = create_client(client_name)
@@ -45,6 +47,8 @@ class TestGET:
             response = client.get("/users/")
         elif scenario == "get_not_found":
             response = client.get("/users/999")
+        elif scenario == "get_existing":
+            response = client.get("/users/user3")
 
         # Assertions
         assert response.status_code == expected_status, response.text

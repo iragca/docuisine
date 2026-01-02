@@ -19,9 +19,9 @@ def test_get_user(client, setup_and_teardown):
     create_response = client.post("/users/", json=user_data)
     assert create_response.status_code == 201, create_response.text
     created_user = create_response.json()
-    user_id = created_user["id"]
-    # Now, retrieve the user by ID
-    get_response = client.get(f"/users/{user_id}")
+    username = created_user["username"]
+    # Now, retrieve the user by username
+    get_response = client.get(f"/users/{username}")
     assert get_response.status_code == 200, get_response.text
     retrieved_user = get_response.json()
     assert retrieved_user["id"] == created_user["id"]

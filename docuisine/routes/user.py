@@ -26,19 +26,19 @@ async def get_users(user_service: User_Service) -> list[user_schemas.UserOut]:
 
 
 @router.get(
-    "/{user_id}",
+    "/{username}",
     status_code=status.HTTP_200_OK,
     response_model=user_schemas.UserOut,
     responses={status.HTTP_404_NOT_FOUND: {"model": Detail}},
 )
-async def get_user(user_id: int, user_service: User_Service) -> user_schemas.UserOut:
+async def get_user(username: str, user_service: User_Service) -> user_schemas.UserOut:
     """
-    Get a user by ID.
+    Get a user by username.
 
     Access Level: Public
     """
     try:
-        user: User = user_service.get_user(user_id=user_id)
+        user: User = user_service.get_user(username=username)
         return user_schemas.UserOut.model_validate(user)
     except errors.UserNotFoundError as e:
         raise HTTPException(

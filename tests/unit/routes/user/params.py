@@ -28,6 +28,16 @@ GET_ALL_USERS_RESPONSE = [
     },
 ]
 
+GET_A_USER_RESPONSE = {
+    "id": 3,
+    "username": "user3",
+    "email": None,
+    "created_at": None,
+    "img": None,
+    "updated_at": None,
+    "preview_img": None,
+}
+
 GET_USER_NOT_FOUND_RESPONSE = {"detail": "User with ID 999 not found."}
 
 # Parametrization for GET tests
@@ -39,6 +49,9 @@ GET_PARAMETERS = [
     ("get_not_found", "public", status.HTTP_404_NOT_FOUND, GET_USER_NOT_FOUND_RESPONSE),
     ("get_not_found", "user", status.HTTP_404_NOT_FOUND, GET_USER_NOT_FOUND_RESPONSE),
     ("get_not_found", "admin", status.HTTP_404_NOT_FOUND, GET_USER_NOT_FOUND_RESPONSE),
+    ("get_existing", "public", status.HTTP_200_OK, GET_A_USER_RESPONSE),
+    ("get_existing", "user", status.HTTP_200_OK, GET_A_USER_RESPONSE),
+    ("get_existing", "admin", status.HTTP_200_OK, GET_A_USER_RESPONSE),
 ]
 
 # ========== POST Responses ==========
