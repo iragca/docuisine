@@ -4,7 +4,6 @@ from docuisine.db.models import Store
 from docuisine.dependencies import AuthenticatedUser, Store_Service
 from docuisine.schemas import store as store_schemas
 from docuisine.schemas.common import Detail
-from docuisine.schemas.enums import Role
 from docuisine.utils import errors
 from docuisine.utils.validation import validate_role
 
