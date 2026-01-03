@@ -87,13 +87,16 @@ nav:
       - Configuration: user-guide/configuration.md
   - Contributing:
       - contributing/index.md
-      - Development: contributing/development.md
-      - "Source Tree": contributing/source-tree.md
-      - Style Guides: contributing/style-guides.md
-      - Branding: contributing/branding.md
+      - Development:
+        - contributing/development/index.md
+        - Backend: contributing/development/backend.md
+        - Frontend: contributing/development/frontend.md
       - Artifacts:
+        - contributing/artifacts/index.md
+        - Branding: contributing/artifacts/branding.md
         - API Reference: contributing/artifacts/api-reference.md
         - Database: contributing/artifacts/database.md
+        - Style Guides: contributing/artifacts/style-guides.md
   - About:
       - Changelog: about/changelog.md
       - License: about/license.md
