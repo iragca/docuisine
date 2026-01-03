@@ -60,6 +60,6 @@ class UserOut(Entity, Default):
     email: Optional[EmailStr] = Field(
         None, description="The user's email address", examples=["user@example.com"]
     )
-    role: Union[Role, str] = Field(..., description="The user's role", examples=["user", "admin"])
+    role: Union[Role, str] = Field(default="public", description="The user's role", examples=["user", "admin"])
 
     model_config = ConfigDict(from_attributes=True)
